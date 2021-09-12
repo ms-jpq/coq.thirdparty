@@ -1,18 +1,16 @@
 return function(spec)
-  COQsources[vim.fn.tempname()] = {
-    fn = function(args, callback)
-      local items = {}
+  return function(args, callback)
+    local items = {}
 
-      for key, val in pairs(vim.lsp.protocol.CompletionItemKind) do
-        if type(key) == "string" and type(val) == "number" then
-          table.insert({label = key, kind = val})
-        end
+    for key, val in pairs(vim.lsp.protocol.CompletionItemKind) do
+      if type(key) == "string" and type(val) == "number" then
+        table.insert({label = key, kind = val})
       end
-
-      callback {
-        isIncomplete = true, -- isIncomplete = True -> no caching
-        items = items
-      }
     end
-  }
+
+    callback {
+      isIncomplete = true, -- isIncomplete = True -> no caching
+      items = items
+    }
+  end
 end

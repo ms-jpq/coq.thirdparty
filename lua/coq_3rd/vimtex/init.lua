@@ -1,7 +1,4 @@
 return function(spec)
-  COQsources[vim.fn.tempname()] = {
-    fn = function(args, callback)
-      callback(nil)
-    end
-  }
+  return function(args, callback)
+  end
 end
