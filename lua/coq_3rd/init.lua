@@ -5,7 +5,7 @@ return function(sources)
     if type(spec.src) == "string" then
       local init = require("coq_3rd." .. spec.src)
       spec.short_name = spec.short_name or string.upper(spec.src)
-      COQsources[vim.fn.tempname()] = {name = short_name, fn = init(spec)}
+      COQsources[vim.fn.tempname()] = {name = spec.short_name, fn = init(spec)}
     end
   end
 end

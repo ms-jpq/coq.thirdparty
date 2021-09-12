@@ -4,7 +4,7 @@ return function(spec)
 
     for key, val in pairs(vim.lsp.protocol.CompletionItemKind) do
       if type(key) == "string" and type(val) == "number" then
-        table.insert({label = key, kind = val})
+        table.insert(items, {label = key, kind = val})
       end
     end
 
