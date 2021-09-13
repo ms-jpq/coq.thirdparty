@@ -43,7 +43,7 @@ local omnifunc = function(opts)
       end
     else
       return function(...)
-        return vim.call(opts.omnifunc, {...})
+        return vim.call(opts.omnifunc, ...)
       end
     end
   end)()
@@ -85,7 +85,7 @@ local omnifunc = function(opts)
   return wrapped
 end
 
-local omni_wrap = function(opts)
+local wrap = function(opts)
   local omni = omnifunc(opts)
   return function(arg, callback)
     local row, col = unpack(arg.pos)
@@ -94,6 +94,4 @@ local omni_wrap = function(opts)
   end
 end
 
-return {
-  omni_wrap = omni_wrap
-}
+return wrap
