@@ -1,8 +1,11 @@
+-- Very simple case
+-- Offers suggestions of `vim.lsp.protocol.CompletionItemKind`
+
 return function(spec)
   return function(args, callback)
     local items = {}
 
-    -- label      :: text to insert if insertText = None
+    -- label      :: text to insert if insertText = None else label
     -- kind       :: int ∈ `vim.lsp.protocol.CompletionItemKind`
     -- insertText :: string | None, text to insert
 
