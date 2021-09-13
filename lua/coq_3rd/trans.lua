@@ -44,6 +44,6 @@ local omnifunc = function(omnifunc)
 end
 
 return {
-  completefunc = completefunc,
+  completefunc_items = completefunc_items,
   omnifunc = omnifunc
 }
