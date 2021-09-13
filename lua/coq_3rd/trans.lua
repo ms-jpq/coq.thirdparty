@@ -12,7 +12,7 @@ local completefunc_items = function(matches)
   return acc
 end
 
-local omnifunc = function(omnifunc)
+local omnifunc = function(use_cache, omnifunc)
   local omni = vim.fn[omnifunc]
 
   return function(row, col)
@@ -37,12 +37,29 @@ local omnifunc = function(omnifunc)
       local words = matches.words and matches.words or matches
       local items = completefunc_items(words)
 
-      return {isIncomplete = true, items = items}
+      return {isIncomplete = not use_cache, items = items}
+    end
+  end
+end
+
+local limit_filetypes = function(fts, fn)
+  if not fts then
+    return fn
+  else
+    local filetypes = {}
+    for _, ft in ipairs(fts) do
+      filetypes[ft] = true
+    end
+    return function(...)
+      if filetypes[vim.bo.filetype] then
+        return fn(...)
+      end
     end
   end
 end
 
 return {
   completefunc_items = completefunc_items,
-  omnifunc = omnifunc
+  omnifunc = omnifunc,
+  limit_filetypes = limit_filetypes
 }
