@@ -9,15 +9,16 @@ See [`:COQhelp custom_sources`](https://github.com/ms-jpq/coq_nvim/tree/coq/docs
 Install the repo the normal way.
 
 ```lua
-local setup = require("coq_3rd")
-setup {
+require("coq_3rd") {
   { src = "demo" },
   { src = "vimtex", short_name = "vTEX" },
   ...
 }
 ```
 
-`setup` takes a list of `{ src = ..., short_name = ..., ... }` objects.
+`require("coq_3rd")` takes a list of `{ src = ..., short_name = ..., ... }` objects.
+
+`src` is required
 
 If `short_name` is not specified, it is uppercase `src`.
 
