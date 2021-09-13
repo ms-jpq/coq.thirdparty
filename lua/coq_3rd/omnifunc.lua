@@ -26,11 +26,11 @@ local completefunc_items = function(matches)
 
   local acc = {}
   for _, match in ipairs(words) do
-    local kind = vim.lsp.protocol.CompletionItemKind[match.kind]
+    local kind = kind_map[match.kind and string.lower(match.kind) or nil]
     local item = {
       label = match.abbr or match.word,
       insertText = match.word,
-      kind = kind_map[match.kind and string.lower(match.kind) or nil],
+      kind = kind,
       detail = match.info
     }
     table.insert(acc, item)
