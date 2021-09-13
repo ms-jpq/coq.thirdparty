@@ -5,6 +5,7 @@ return {
       local item = {
         label = match.abbr or match.word,
         insertText = match.word,
+        kind = vim.lsp.protocol.CompletionItemKind[match.kind],
         detail = match.info
       }
       table.insert(acc, item)
