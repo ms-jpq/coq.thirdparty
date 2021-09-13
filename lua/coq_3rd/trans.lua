@@ -85,15 +85,15 @@ local omnifunc = function(opts)
   return wrapped
 end
 
-local wrap_omni = function(omnifunc)
+local omni_wrap = function(opts)
+  local omni = omnifunc(opts)
   return function(arg, callback)
     local row, col = unpack(arg.pos)
-    local items = omnifunc(row, col)
+    local items = omni(row, col)
     callback(items)
   end
 end
 
 return {
-  completefunc_items = completefunc_items,
-  omnifunc = omnifunc
+  omni_wrap = omni_wrap
 }
