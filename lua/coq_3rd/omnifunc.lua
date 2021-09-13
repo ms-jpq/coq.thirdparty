@@ -1,6 +1,7 @@
 local kind_map =
   (function()
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
+
   local acc = {
     v = lsp_kinds.Variable,
     f = lsp_kinds.Function,
@@ -14,6 +15,7 @@ local kind_map =
       acc[string.lower(key)] = val
     end
   end
+
   return acc
 end)()
 
@@ -35,6 +37,7 @@ local completefunc_items = function(matches)
     }
     table.insert(acc, item)
   end
+
   return acc
 end
 
