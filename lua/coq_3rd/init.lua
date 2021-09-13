@@ -21,10 +21,13 @@ return function(sources)
       src = {spec.src, "string"},
       short_name = {spec.short_name, "string", true}
     }
-
-    COQsources[uid(COQsources)] = {
-      name = spec.short_name or string.upper(spec.src),
-      fn = require("coq_3rd." .. spec.src)
-    }
+    local mod = "coq_3rd." .. spec.src
+    local go, fn = p_call(require, mod)
+    if go then
+      COQsources[uid(COQsources)] = {
+        name = spec.short_name or string.upper(spec.src),
+        fn = fn
+      }
+    end
   end
 end
