@@ -13,7 +13,14 @@ local completefunc_items = function(matches)
 end
 
 local omnifunc = function(use_cache, omnifunc)
-  local omni = vim.fn[omnifunc]
+  local omni = (function()
+    local vlua = "v:lua."
+    if vim.startswith(omnifunc, vlua) then
+      return _G[string.sub(omnifunc, #vlua + 1)]
+    else
+      return vim.fn[omnifunc]
+    end
+  end)()
 
   return function(row, col)
     local pos = omni(1, "")
