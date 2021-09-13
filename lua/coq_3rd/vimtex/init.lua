@@ -1,15 +1,15 @@
-local trans = require("coq_3rd.trans")
+local trans = require("coq_3rd.trans").omnifunc
 
 return function(spec)
-  local omni =
-    trans.limit_filetypes(
-    spec.filetypes,
-    trans.omnifunc(spec.use_cache, "vimtex#complete#omnifunc")
-  )
+  local omnifunc =
+    trans {
+    use_cache = spec.use_cache,
+    omnifunc = "vimtex#complete#omnifunc"
+  }
 
   return function(args, callback)
     local row, col = unpack(args.pos)
-    local items = omni(row, col)
+    local items = omnifunc(row, col)
     callback(items)
   end
 end

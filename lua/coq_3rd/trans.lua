@@ -12,18 +12,31 @@ local completefunc_items = function(matches)
   return acc
 end
 
-local omnifunc = function(use_cache, omnifunc)
-  local omni = (function()
+local omnifunc = function(opts)
+  vim.validate {
+    omnifunc = {opts.omnifunc, "string"},
+    filetypes = {opts.filetypes, "table", true}
+  }
+
+  local filetypes = (function()
+    local acc = {}
+    for _, ft in ipairs(opts.filetypes or {}) do
+      acc[ft] = true
+    end
+    return acc
+  end)()
+
+  local omnifunc = (function()
     local vlua = "v:lua."
-    if vim.startswith(omnifunc, vlua) then
-      return _G[string.sub(omnifunc, #vlua + 1)]
+    if vim.startswith(opts.omnifunc, vlua) then
+      return _G[string.sub(opts.omnifunc, #vlua + 1)]
     else
-      return vim.fn[omnifunc]
+      return vim.fn[opts.omnifunc]
     end
   end)()
 
-  return function(row, col)
-    local pos = omni(1, "")
+  local fetch = function(row, col)
+    local pos = omnifunc(1, "")
 
     if pos == -2 or pos == -3 then
       return nil
@@ -40,35 +53,26 @@ local omnifunc = function(use_cache, omnifunc)
         end
       end)()
 
-      local matches = omni(0, cword)
+      local matches = omnifunc(0, cword)
       local words = matches.words and matches.words or matches
       local items = completefunc_items(words)
 
-      return {isIncomplete = not use_cache, items = items}
+      return {isIncomplete = not opts.use_cache, items = items}
     end
   end
-end
 
-local limit_filetypes = function(fts, fn, bottom)
-  if not fts then
-    return fn
-  else
-    local filetypes = {}
-    for _, ft in ipairs(fts) do
-      filetypes[ft] = true
-    end
-    return function(...)
-      if filetypes[vim.bo.filetype] then
-        return fn(...)
-      else
-        return bottom
-      end
+  local wrapped = function(row, col)
+    if not opts.filetypes or filetypes[vim.bo.filetype] then
+      return fetch(row, col)
+    else
+      return nil
     end
   end
+
+  return wrapped
 end
 
 return {
   completefunc_items = completefunc_items,
-  omnifunc = omnifunc,
-  limit_filetypes = limit_filetypes
+  omnifunc = omnifunc
 }
