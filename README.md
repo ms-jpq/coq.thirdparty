@@ -6,7 +6,7 @@ See [`:COQhelp custom_sources`](https://github.com/ms-jpq/coq_nvim/tree/coq/docs
 
 ## How to use
 
-Install the repo the normal way.
+Install the repo the normal way, and then:
 
 ```lua
 require("coq_3rd") {
