@@ -5,6 +5,6 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local items = omni(row, col)
-    return items
+    callback(items)
   end
 end

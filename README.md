@@ -34,4 +34,4 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 ### [VimTex](https://github.com/lervag/vimtex)
 
-`{ src = "vimtex" }`
+`{ src = "vimtex", short_name = "vTEX" }`
