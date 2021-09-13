@@ -20,6 +20,7 @@ end
 
 local omnifunc = function(opts)
   vim.validate {
+    use_cache = {opts.use_cache, "boolean"},
     omnifunc = {opts.omnifunc, "string"},
     filetypes = {opts.filetypes, "table", true}
   }
@@ -27,7 +28,7 @@ local omnifunc = function(opts)
   local filetypes = (function()
     local acc = {}
     for _, ft in ipairs(opts.filetypes or {}) do
-      vim.validate {ft, {ft, "string"}}
+      vim.validate {ft = {ft, "string"}}
       acc[ft] = true
     end
     return acc
