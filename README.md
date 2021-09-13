@@ -26,7 +26,7 @@ The rest of object are specific to each individual source.
 
 ## Sources
 
-### Demo
+### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3rd/demo/init.lua)
 
 `{ src = "demo" }`
 
