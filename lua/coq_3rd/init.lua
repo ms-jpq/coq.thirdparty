@@ -21,9 +21,11 @@ return function(sources)
       src = {spec.src, "string"},
       short_name = {spec.short_name, "string", true}
     }
-
-    local init = require("coq_3rd." .. spec.src)
     spec.short_name = spec.short_name or string.upper(spec.src)
-    COQsources[uid(COQsources)] = {name = spec.short_name, fn = init(spec)}
+
+    COQsources[uid(COQsources)] = {
+      name = spec.short_name,
+      fn = require("coq_3rd." .. spec.src)
+    }
   end
 end

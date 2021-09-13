@@ -40,6 +40,6 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 ### [Orgmode.nvim](https://github.com/kristijanhusak/orgmode.nvim)
 
-`{ src = "org_mode", short_name = "ORG" }`
+`{ src = "orgmode", short_name = "ORG" }`
 
 - Cache enabled
