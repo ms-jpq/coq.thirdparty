@@ -53,6 +53,8 @@ local limit_filetypes = function(fts, fn)
     return function(...)
       if filetypes[vim.bo.filetype] then
         return fn(...)
+      else
+        return nil
       end
     end
   end
