@@ -1,3 +1,22 @@
+local kind_map =
+  (function()
+  local lsp_kinds = vim.lsp.protocol.CompletionItemKind
+  local acc = {
+    v = lsp_kinds.Variable,
+    f = lsp_kinds.Function,
+    m = lsp_kinds.Property,
+    t = lsp_kinds.TypeParameter
+    --d = lsp_kinds.Macro
+  }
+
+  for key, val in pairs(lsp_kinds) do
+    if type(key) == "string" and type(val) == "number" then
+      acc[string.lower(key)] = val
+    end
+  end
+  return acc
+end)()
+
 local completefunc_items = function(matches)
   vim.validate {
     matches = {matches, "table"}
@@ -7,10 +26,11 @@ local completefunc_items = function(matches)
 
   local acc = {}
   for _, match in ipairs(words) do
+    local kind = vim.lsp.protocol.CompletionItemKind[match.kind]
     local item = {
       label = match.abbr or match.word,
       insertText = match.word,
-      kind = vim.lsp.protocol.CompletionItemKind[match.kind],
+      kind = kind_map[match.kind and string.lower(match.kind) or nil],
       detail = match.info
     }
     table.insert(acc, item)

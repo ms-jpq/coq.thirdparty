@@ -22,12 +22,19 @@ return function(sources)
       short_name = {spec.short_name, "string", true}
     }
     local mod = "coq_3rd." .. spec.src
-    local go, fn = p_call(require, mod)
+    local go, factory = pcall(require, mod)
     if go then
-      COQsources[uid(COQsources)] = {
-        name = spec.short_name or string.upper(spec.src),
-        fn = fn
-      }
+      local go, fn = pcall(factory, spec)
+      if go then
+        COQsources[uid(COQsources)] = {
+          name = spec.short_name or string.upper(spec.src),
+          fn = fn
+        }
+      else
+        vim.api.nvim_err_writeln(fn)
+      end
+    else
+      vim.api.nvim_err_writeln(factory)
     end
   end
 end
