@@ -1,6 +1,12 @@
 local completefunc_items = function(matches)
+  vim.validate {
+    matches = {matches, "table"}
+  }
+
+  local words = matches.words and matches.words or matches
+
   local acc = {}
-  for _, match in ipairs(matches) do
+  for _, match in ipairs(words) do
     local item = {
       label = match.abbr or match.word,
       insertText = match.word,
@@ -21,6 +27,7 @@ local omnifunc = function(opts)
   local filetypes = (function()
     local acc = {}
     for _, ft in ipairs(opts.filetypes or {}) do
+      vim.validate {ft, {ft, "string"}}
       acc[ft] = true
     end
     return acc
@@ -37,6 +44,7 @@ local omnifunc = function(opts)
 
   local fetch = function(row, col)
     local pos = omnifunc(1, "")
+    vim.validate {pos = {pos, "number"}}
 
     if pos == -2 or pos == -3 then
       return nil
@@ -54,8 +62,7 @@ local omnifunc = function(opts)
       end)()
 
       local matches = omnifunc(0, cword)
-      local words = matches.words and matches.words or matches
-      local items = completefunc_items(words)
+      local items = completefunc_items(matches)
 
       return {isIncomplete = not opts.use_cache, items = items}
     end

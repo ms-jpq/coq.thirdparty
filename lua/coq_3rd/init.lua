@@ -11,12 +11,19 @@ end
 
 return function(sources)
   COQsources = COQsources or {}
+  vim.validate {
+    COQsources = {COQsources, "table"},
+    sources = {sources, "table"}
+  }
 
   for _, spec in ipairs(sources) do
-    if type(spec.src) == "string" then
-      local init = require("coq_3rd." .. spec.src)
-      spec.short_name = spec.short_name or string.upper(spec.src)
-      COQsources[uid(COQsources)] = {name = spec.short_name, fn = init(spec)}
-    end
+    vim.validate {
+      src = {spec.src, "string"},
+      short_name = {spec.short_name, "string", true}
+    }
+
+    local init = require("coq_3rd." .. spec.src)
+    spec.short_name = spec.short_name or string.upper(spec.src)
+    COQsources[uid(COQsources)] = {name = spec.short_name, fn = init(spec)}
   end
 end

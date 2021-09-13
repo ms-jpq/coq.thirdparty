@@ -3,8 +3,9 @@ local trans = require("coq_3rd.trans").omnifunc
 return function(spec)
   local omnifunc =
     trans {
-    use_cache = spec.use_cache,
-    omnifunc = "vimtex#complete#omnifunc"
+    use_cache = true,
+    omnifunc = "vimtex#complete#omnifunc",
+    filetypes = {"tex", "plaintex"}
   }
 
   return function(args, callback)

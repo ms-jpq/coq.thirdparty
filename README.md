@@ -34,6 +34,6 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 ### [VimTex](https://github.com/lervag/vimtex)
 
-`{ src = "vimtex", short_name = "vTEX", use_cache = true, filetypes = {"tex", "plaintex"} }`
+`{ src = "vimtex", short_name = "vTEX" }`
 
 This is a wrapper around `omnifunc`
