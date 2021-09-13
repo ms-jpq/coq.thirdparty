@@ -4,6 +4,7 @@ return function(spec)
   local omni = omnifunc("vimtex#complete#omnifunc")
   return function(args, callback)
     local row, col = unpack(args.pos)
-    return omni(row, col)
+    local items = omni(row, col)
+    return items
   end
 end
