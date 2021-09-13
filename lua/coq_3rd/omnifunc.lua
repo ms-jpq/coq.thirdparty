@@ -62,7 +62,7 @@ local omnifunc = function(opts)
     if vim.startswith(opts.omnifunc, vlua) then
       local name = string.sub(opts.omnifunc, #vlua + 1)
       return function(...)
-        return _G[name]
+        return _G[name](...)
       end
     else
       return function(...)
@@ -78,19 +78,28 @@ local omnifunc = function(opts)
     if pos == -2 or pos == -3 then
       return nil
     else
-      local cword = (function()
+      local cword =
+        (function()
         if pos < 0 or pos >= col then
           return vim.fn.expand("<cword>")
         else
           local line =
             vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
-          local search = string.sub(line, math.min(col, pos) + 1)
-          local cword = string.match(search, "[^%s]+")
+          local sep = math.min(col, pos) + 1
+          local b_search = string.sub(line, 0, sep)
+          local f_search = string.sub(line, sep)
+          local f =
+            string.reverse(
+            string.match(string.reverse(b_search), "^[^%s]+") or ""
+          )
+          local b = string.match(f_search, "[^%s]+") or ""
+
+          local cword = f .. b
           return cword
         end
       end)()
 
-      local matches = omnifunc(0, cword)
+      local matches = omnifunc(0, cword) or {}
       local items = completefunc_items(matches)
 
       return {isIncomplete = not opts.use_cache, items = items}
