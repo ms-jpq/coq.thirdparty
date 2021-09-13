@@ -1,5 +1,5 @@
 local uid = function(sources)
-  key = nil
+  local key = nil
   while true do
     if not key or sources[key] then
       key = math.floor(math.random() * 10000)
