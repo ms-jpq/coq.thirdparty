@@ -1,4 +1,4 @@
-local trans = require("coq_3rd.translate").completefunc
+local trans = require("coq_3rd.trans").completefunc
 
 return function(spec)
   return function(args, callback)
