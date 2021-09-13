@@ -2,8 +2,8 @@ return function(spec)
   return function(args, callback)
     local items = {}
 
-    -- label :: text to insert if insertText = None
-    -- kind  :: int ∈ `vim.lsp.protocol.CompletionItemKind`
+    -- label      :: text to insert if insertText = None
+    -- kind       :: int ∈ `vim.lsp.protocol.CompletionItemKind`
     -- insertText :: string | None, text to insert
 
     for key, val in pairs(vim.lsp.protocol.CompletionItemKind) do
