@@ -42,7 +42,7 @@ local omnifunc = function(use_cache, omnifunc)
   end
 end
 
-local limit_filetypes = function(fts, fn)
+local limit_filetypes = function(fts, fn, bottom)
   if not fts then
     return fn
   else
@@ -54,7 +54,7 @@ local limit_filetypes = function(fts, fn)
       if filetypes[vim.bo.filetype] then
         return fn(...)
       else
-        return nil
+        return bottom
       end
     end
   end
