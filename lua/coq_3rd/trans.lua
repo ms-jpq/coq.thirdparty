@@ -37,9 +37,14 @@ local omnifunc = function(opts)
   local omnifunc = (function()
     local vlua = "v:lua."
     if vim.startswith(opts.omnifunc, vlua) then
-      return _G[string.sub(opts.omnifunc, #vlua + 1)]
+      local name = string.sub(opts.omnifunc, #vlua + 1)
+      return function(...)
+        return _G[name]
+      end
     else
-      return vim.fn[opts.omnifunc]
+      return function(...)
+        return vim.call(opts.omnifunc, {...})
+      end
     end
   end)()
 
@@ -78,6 +83,14 @@ local omnifunc = function(opts)
   end
 
   return wrapped
+end
+
+local wrap_omni = function(omnifunc)
+  return function(arg, callback)
+    local row, col = unpack(arg.pos)
+    local items = omnifunc(row, col)
+    callback(items)
+  end
 end
 
 return {

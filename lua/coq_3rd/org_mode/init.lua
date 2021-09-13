@@ -3,8 +3,8 @@ return function(spec)
   return trans.omni_warp(
     trans.omnifunc {
       use_cache = true,
-      omnifunc = "vimtex#complete#omnifunc",
-      filetypes = {"tex", "plaintex"}
+      omnifunc = "OrgmodeOmni",
+      filetypes = {"org"}
     }
   )
 end

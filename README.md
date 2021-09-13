@@ -36,4 +36,10 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 `{ src = "vimtex", short_name = "vTEX" }`
 
-This is a wrapper around `omnifunc`
+- Cache enabled
+
+### [Orgmode.nvim](https://github.com/kristijanhusak/orgmode.nvim)
+
+`{ src = "org_mode", short_name = "ORG" }`
+
+- Cache enabled
