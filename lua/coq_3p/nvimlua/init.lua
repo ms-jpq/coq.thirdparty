@@ -12,10 +12,13 @@ return function(spec)
     boolean = lsp_kinds.Property
   }
 
-  local parse = function()
-    local line = vim.api.nvim_get_current_line()
+  local parse = function(row, col)
+    local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
+    local before_cursor = string.sub(line, 1, col + 1)
     local match =
-      string.reverse(string.match(string.reverse(line), "^[^%s]+") or "")
+      string.reverse(
+      string.match(string.reverse(before_cursor), "^[^%s]+") or ""
+    )
     local path = vim.split(match, ".", true)
 
     local cur, seen = _G, {"_G"}
@@ -24,7 +27,7 @@ return function(spec)
       if type(cur) == "table" and type(cur[key]) == "table" then
         cur = cur[key]
         table.insert(seen, key)
-        if idx == #pass then
+        if idx == #path then
           fin = true
         end
       else
@@ -44,14 +47,15 @@ return function(spec)
       table.insert(acc, item)
     end
 
-    return acc
+    return {isIncomplete = false, items = acc}
   end
 
   return function(args, callback)
     if vim.bo.filetype ~= "lua" then
       callback(nil)
     else
-      local go, parsed = pcall(parse)
+      local row, col = unpack(args.pos)
+      local go, parsed = pcall(parse, row, col)
       if go then
         callback(parsed)
       else
