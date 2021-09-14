@@ -62,7 +62,7 @@ return function(spec)
           end,
           on_stdout = function(_, msg)
             local big_fig = (function()
-              local linesep = M.linesep()
+              local linesep = utils.linesep()
               local acc = {}
               for _, line in ipairs(msg) do
                 table.insert(acc, c_on(line))
