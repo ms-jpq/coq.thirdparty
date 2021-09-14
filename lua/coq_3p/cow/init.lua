@@ -30,7 +30,6 @@ return function(spec)
           stderr_buffered = true,
           stdout_buffered = true,
           on_exit = function(_, code)
-            locked = false
             if code == 0 and stdout then
               fin()
             end
@@ -43,6 +42,7 @@ return function(spec)
           end
         }
       )
+
       return acc
     end
   end)()
@@ -96,6 +96,7 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
+            stdout = msg
           end
         }
       )

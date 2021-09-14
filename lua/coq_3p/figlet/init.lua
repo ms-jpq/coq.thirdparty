@@ -8,6 +8,7 @@ return function(spec)
   local fonts =
     (function()
     local acc = {}
+
     if #fig_path > 0 then
       local stdout = nil
 
@@ -30,7 +31,6 @@ return function(spec)
           stderr_buffered = true,
           stdout_buffered = true,
           on_exit = function(_, code)
-            locked = false
             if code == 0 and stdout then
               fin()
             end
@@ -43,6 +43,7 @@ return function(spec)
           end
         }
       )
+
       return acc
     end
   end)()
