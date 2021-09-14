@@ -61,7 +61,7 @@ return function(spec)
       return false
     elseif spec.conf_only then
       local bufname = vim.api.nvim_buf_get_name(0)
-      return vim.fn.findfile(bufname, conf_dir)
+      return vim.startswith(bufname, conf_dir)
     else
       return false
     end
