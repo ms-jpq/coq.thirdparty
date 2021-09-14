@@ -8,8 +8,6 @@
 
 local utils = require("coq_3p.utils")
 
-print(utils.cword("      asd kkz", 0))
-
 local kind_map =
   (function()
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
