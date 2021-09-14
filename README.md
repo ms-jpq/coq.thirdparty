@@ -13,7 +13,7 @@ See [`:COQhelp custom_sources`](https://github.com/ms-jpq/coq_nvim/tree/coq/docs
 Install the repo the normal way, and then:
 
 ```lua
-require("coq_3rd") {
+require("coq_3p") {
   { src = "demo" },
   { src = "vimtex", short_name = "vTEX" },
   ...
