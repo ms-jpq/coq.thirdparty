@@ -5,15 +5,16 @@ return function(spec)
   return function(args, callback)
     local items = {}
 
-    -- label      :: text to insert if insertText = None
+    -- label      :: display label
+    -- insertText :: string | null, default to `label` if null
     -- kind       :: int ∈ `vim.lsp.protocol.CompletionItemKind`
-    -- insertText :: string | None, text to insert
     -- detail     :: doc popup
 
     for key, val in pairs(vim.lsp.protocol.CompletionItemKind) do
       if type(key) == "string" and type(val) == "number" then
         local item = {
-          label = key,
+          label = "label .. " .. key,
+          insertText = key,
           kind = val,
           detail = tostring(math.random())
         }
