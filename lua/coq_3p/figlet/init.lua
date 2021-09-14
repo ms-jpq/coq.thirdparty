@@ -40,9 +40,7 @@ return function(spec)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
 
-    if #fonts <= 0 then
-      callback {isIncomplete = false, items = {}}
-    elseif locked or not vim.endswith(before_cursor, trigger) then
+    if #fonts <= 0 or locked or not vim.endswith(before_cursor, trigger) then
       callback(nil)
     else
       locked = true
@@ -102,7 +100,7 @@ return function(spec)
 
       if chan <= 0 then
         locked = false
-        callback {isIncomplete = false, items = {}}
+        callback(nil)
       else
         vim.fn.chansend(chan, c_off(before_cursor))
         vim.fn.chanclose(chan, "stdin")
