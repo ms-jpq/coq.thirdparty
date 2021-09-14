@@ -1,10 +1,10 @@
 # coq.nvim Thirdparty Sources
 
-PR welcome
+**PR welcome**
 
 ---
 
-Shim layer for [`coq.nvim`](https://github.com/ms-jpq/coq_nvim) to communicate with other vim plugins.
+Third party integration for [`coq.nvim`](https://github.com/ms-jpq/coq_nvim)
 
 See [`:COQhelp custom_sources`](https://github.com/ms-jpq/coq_nvim/tree/coq/docs/CUSTOM_SOURCES.md)
 
@@ -28,7 +28,7 @@ If `short_name` is not specified, it is uppercase `src`.
 
 The rest of object are specific to each individual source.
 
-## Sources
+## Third Parties
 
 ### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3p/demo/init.lua)
 
