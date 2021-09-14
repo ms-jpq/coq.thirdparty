@@ -42,6 +42,8 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 Live nvim Lua env.
 
+![lua.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/nvim_lua.gif)
+
 ## Third Parties
 
 ### [VimTex](https://github.com/lervag/vimtex)
