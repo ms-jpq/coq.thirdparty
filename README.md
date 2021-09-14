@@ -84,3 +84,15 @@ requires - [`figlet`](https://linux.die.net/man/6/figlet)
 `{ src = "orgmode", short_name = "ORG" }`
 
 - Cache enabled
+
+---
+
+## FYI
+
+None of the code under `require('coq_3p')` is public API.
+
+From the users' prespective, any change I make should be transparent, ie. I will try to not break their stuff.
+
+For other plugin developers, if you want to re-use my code. Make a COPY, do not just `require "blah"` from this repo.
+
+I want to reserve the ability to fearlessly re-factor my code.

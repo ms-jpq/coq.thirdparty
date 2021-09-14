@@ -1,7 +1,7 @@
 -- !!WARN !!
 
 --
--- THIS IS **NOT** STABLE API
+-- THIS IS **NOT** PUBLIC API
 --
 
 -- !!WARN !!
