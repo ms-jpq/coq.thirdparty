@@ -7,7 +7,7 @@ return function(spec)
   return function(args, callback)
     local _, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
-    local match = vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]])
+    local match = vim.trim(vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]]))
 
     if (#bc_path <= 0) or locked or (#match <= 0) then
       callback(nil)
@@ -32,9 +32,9 @@ return function(spec)
               isIncomplete = false,
               items = {
                 {
-                  label = ans,
+                  label = "= " .. ans,
                   insertText = ans,
-                  detail = match .. "= " .. ans,
+                  detail = match .. " = " .. ans,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit
                 }
               }
