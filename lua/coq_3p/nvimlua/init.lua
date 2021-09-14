@@ -19,9 +19,7 @@ return function(spec)
     boolean = lsp_kinds.Property
   }
 
-  local parse = function(line, col)
-    local before_cursor = utils.split_line(line, col)
-    local match = vim.fn.matchstr(before_cursor, [[\v(\w|\.)+$]])
+  local parse = function(match)
     local path = vim.split(match, ".", true)
 
     local cur, seen = _G, {"_G"}
@@ -57,13 +55,16 @@ return function(spec)
 
   local conf_dir = p_norm(vim.fn.stdpath("config"))
 
-  local should = function(line, col)
+  local should = function(line, match)
     if vim.bo.filetype ~= "lua" then
       return false
     end
 
-    local cword = utils.cword(line, col)
-    if #cword == 0 then
+    if #match == 0 then
+      return false
+    end
+
+    if utils.in_comment(line) then
       return false
     end
 
@@ -77,19 +78,18 @@ return function(spec)
 
   return function(args, callback)
     local _, col = unpack(args.pos)
-    if not should(args.line, col) then
+    local before_cursor = utils.split_line(args.line, col)
+    local match = vim.fn.matchstr(before_cursor, [[\v(\w|\.)+$]])
+
+    if not should(args.line, match) then
       callback(nil)
     else
-      if utils.in_comment(args.line) then
-        callback(nil)
+      local go, parsed = pcall(parse, match)
+      if go then
+        callback(parsed)
       else
-        local go, parsed = pcall(parse, args.line, col)
-        if go then
-          callback(parsed)
-        else
-          callback(nil)
-          utils.debug_err(parsed)
-        end
+        callback(nil)
+        utils.debug_err(parsed)
       end
     end
   end
