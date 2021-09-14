@@ -40,19 +40,17 @@ return function(spec)
     end
     assert(type(cur), "table")
 
-    local escape = function(key)
-      return fin and "." .. key or key
-    end
-
     local acc = {}
     for key, val in pairs(cur) do
-      local item = {
-        label = key,
-        insertText = escape(key),
-        kind = kind_map[type(val)],
-        detail = table.concat(vim.tbl_flatten {seen, {key}}, ".")
-      }
-      table.insert(acc, item)
+      if #(string.match(key, "^[A-z]+$") or "") == #key then
+        local item = {
+          label = key,
+          insertText = fin and "." .. key or key,
+          kind = kind_map[type(val)],
+          detail = table.concat(vim.tbl_flatten {seen, {key}}, ".")
+        }
+        table.insert(acc, item)
+      end
     end
 
     return {isIncomplete = false, items = acc}
