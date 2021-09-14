@@ -8,28 +8,41 @@ return function(spec)
   local cows =
     (function()
     local acc = {}
+
     if #cow_path > 0 then
+      local stdout = nil
+
+      local fin = function()
+        for idx, line in ipairs(stdout) do
+          if idx ~= 1 then
+            for _, cow in ipairs(vim.split(line, "%s")) do
+              if #cow then
+                table.insert(acc, cow)
+              end
+            end
+          end
+        end
+      end
+
       vim.fn.jobstart(
         {cow_path, "-l"},
         {
           stderr_buffered = true,
           stdout_buffered = true,
+          on_exit = function(_, code)
+            if code == 0 and stdout then
+              fin()
+            end
+          end,
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            for idx, line in ipairs(msg) do
-              if idx ~= 1 then
-                for _, cow in ipairs(vim.split(line, "%s")) do
-                  if #cow then
-                    table.insert(acc, cow)
-                  end
-                end
-              end
-            end
+            stdout = msg
           end
         }
       )
+
       return acc
     end
   end)()
@@ -47,34 +60,43 @@ return function(spec)
       locked = true
       local cow, style = utils.pick(cows), utils.pick(styles)
 
+      local stdout = nil
+
+      local fin = function()
+        local linesep = utils.linesep()
+        local big_cow = table.concat(stdout, linesep)
+        callback {
+          isIncomplete = false,
+          items = {
+            {
+              label = "🐮",
+              insertText = utils.snippet_escape(big_cow),
+              detail = big_cow,
+              kind = vim.lsp.protocol.CompletionItemKind.Unit,
+              filterText = trigger,
+              insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
+            }
+          }
+        }
+      end
+
       local chan =
         vim.fn.jobstart(
         {cow_path, "-f", cow, style},
         {
           stderr_buffered = true,
           stdout_buffered = true,
-          on_exit = function()
+          on_exit = function(_, code)
             locked = false
+            if code == 0 and stdout then
+              fin()
+            end
           end,
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local linesep = utils.linesep()
-            local big_cow = table.concat(msg, linesep)
-            callback {
-              isIncomplete = false,
-              items = {
-                {
-                  label = "🐮",
-                  insertText = utils.snippet_escape(big_cow),
-                  detail = big_cow,
-                  kind = vim.lsp.protocol.CompletionItemKind.Unit,
-                  filterText = trigger,
-                  insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
-                }
-              }
-            }
+            stdout = msg
           end
         }
       )
