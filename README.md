@@ -37,17 +37,15 @@ The rest of object are specific to each individual source.
 
 This is a reference implementation, do not enable it unless you want to write your own plugin, and want to see how it works.
 
-### Nvim Lua
+### Nvim Lua API
 
 `{ src = "nvimlua", short_name = "nLUA", conf_only = true }`
 
-Live nvim Lua env.
-
 ![lua.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/nvim_lua.gif)
 
-- conf_only :: only return results if current document is relative to `$VIM_HOME`
+- conf_only :: only return results if current document is relative to `$NVIM_HOME`
 
-### Math
+### Scientific calculator
 
 `{ src = "bc", short_name = "MATH", precision = 6 }`
 
@@ -55,7 +53,7 @@ Live nvim Lua env.
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
-### Banner
+### Comment Banner
 
 `{ src = "figlet", short_name = "BIG" }`
 
