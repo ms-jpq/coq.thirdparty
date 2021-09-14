@@ -1,4 +1,8 @@
 return function(spec)
+  vim.validate {
+    precision = {spec.precision, "number"}
+  }
+
   local utils = require("coq_3p.utils")
 
   local bc_path = vim.fn.exepath("bc")
@@ -18,22 +22,26 @@ return function(spec)
 
       local fin = function()
         local ans = table.concat(stdout, "")
-        callback {
-          isIncomplete = false,
-          items = {
-            {
-              label = "= " .. ans,
-              insertText = ans,
-              detail = match .. " = " .. ans,
-              kind = vim.lsp.protocol.CompletionItemKind.Unit
+        if #ans <= 0 then
+          callback(nil)
+        else
+          callback {
+            isIncomplete = false,
+            items = {
+              {
+                label = "= " .. ans,
+                insertText = ans,
+                detail = match .. " = " .. ans,
+                kind = vim.lsp.protocol.CompletionItemKind.Unit
+              }
             }
           }
-        }
+        end
       end
 
       local chan =
         vim.fn.jobstart(
-        {bc_path},
+        {bc_path, "--mathlib"},
         {
           stderr_buffered = true,
           stdout_buffered = true,
@@ -56,7 +64,9 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        vim.fn.chansend(chan, match .. "\n")
+        local scale = "scale=" .. spec.precision .. ";"
+        local feed = scale .. match .. "\n"
+        vim.fn.chansend(chan, feed)
         vim.fn.chanclose(chan, "stdin")
       end
     end
