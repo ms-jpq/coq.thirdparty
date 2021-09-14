@@ -73,7 +73,7 @@ return function(spec)
               (function()
               local _, u16 = vim.str_utfindex(args.line)
               local edit = {
-                newText = "\n" .. big_fig,
+                newText = big_fig,
                 range = {
                   start = {line = row, character = 0},
                   ["end"] = {line = row, character = u16}
