@@ -27,14 +27,10 @@ return function(spec)
     local path = vim.split(match, ".", true)
 
     local cur, seen = _G, {"_G"}
-    local fin = false
     for idx, key in ipairs(path) do
       if type(cur) == "table" and type(cur[key]) == "table" then
         cur = cur[key]
         table.insert(seen, key)
-        if idx == #path then
-          fin = true
-        end
       else
         break
       end
@@ -46,7 +42,7 @@ return function(spec)
       if vim.fn.matchstr(key, [[\v^\w(\w|\d)*$]]) == key then
         local item = {
           label = key,
-          insertText = fin and "." .. key or key,
+          insertText = key,
           kind = kind_map[type(val)],
           detail = table.concat(vim.tbl_flatten {seen, {key}}, ".")
         }
