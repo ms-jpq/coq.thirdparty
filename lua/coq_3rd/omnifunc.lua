@@ -58,7 +58,7 @@ local completefunc_items = function(matches)
       local label = match.abbr or match.word
       if match.menu and not menu_taken then
         menu_taken = true
-        return label .. "\t" .. match.menu
+        return label .. "\t" .. match.menu .. ""
       else
         return label
       end
