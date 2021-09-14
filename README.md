@@ -49,7 +49,7 @@ Live nvim Lua env.
 
 ### Math
 
-`{ src = "bc", short_name = "MATH" }`
+`{ src = "bc", short_name = "MATH", precision = 6 }`
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
