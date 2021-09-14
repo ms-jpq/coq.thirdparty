@@ -47,6 +47,14 @@ Live nvim Lua env.
 
 - conf_only :: only return results if current document is relative to `$VIM_HOME`
 
+### Cowsay
+
+`{ src = "cow" }`
+
+### Banner
+
+`{ src = "figlet" }`
+
 ## Third Parties
 
 ### [VimTex](https://github.com/lervag/vimtex)
