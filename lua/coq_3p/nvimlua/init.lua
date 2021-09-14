@@ -1,4 +1,6 @@
 return function(spec)
+  local utils = require("coq_3p.utils")
+
   vim.validate {
     conf_only = {spec.conf_only, "boolean"}
   }
@@ -16,8 +18,7 @@ return function(spec)
     boolean = lsp_kinds.Property
   }
 
-  local parse = function(row, col)
-    local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
+  local parse = function(line, row, col)
     local before_cursor = string.sub(line, 1, col + 1)
     local match =
       string.reverse(
@@ -78,11 +79,17 @@ return function(spec)
       callback(nil)
     else
       local row, col = unpack(args.pos)
-      local go, parsed = pcall(parse, row, col)
-      if go then
-        callback(parsed)
+      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
+      if utils.in_comment(line) then
+        callback(nil)
       else
-        vim.api.nvim_err_writeln(parsed)
+        local go, parsed = pcall(parse, line, row, col)
+        if go then
+          callback(parsed)
+        else
+          callback(nil)
+          utils.debug_err(parsed)
+        end
       end
     end
   end

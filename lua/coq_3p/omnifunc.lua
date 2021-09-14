@@ -1,4 +1,12 @@
-local DEBUG = vim.env.COQ_DEBUG
+-- !!WARN !!
+
+--
+-- THIS IS **NOT** STABLE DO NOT DEPEND ON IMPLEMENTATION DETAIL
+--
+
+-- !!WARN !!
+
+local utils = require("coq_3p.utils")
 
 local kind_map =
   (function()
@@ -38,10 +46,6 @@ local completefunc_items = function(matches)
       kind = {match.kind, "string", true},
       info = {match.info, "string", true}
     }
-
-    if DEBUG then
-      print(vim.inspect(match))
-    end
 
     local kind_taken, menu_taken = false, false
 
@@ -129,7 +133,7 @@ local omnifunc = function(opts)
     end
   end)()
 
-  local fetch = function(row, col)
+  local fetch = function(line, row, col)
     local pos = omnifunc(1, "")
     vim.validate {pos = {pos, "number"}}
 
@@ -141,8 +145,6 @@ local omnifunc = function(opts)
         if pos < 0 or pos >= col then
           return vim.fn.expand("<cword>")
         else
-          local line =
-            vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
           local sep = math.min(col, pos)
           local b_search = string.sub(line, 0, sep)
           local f_search = string.sub(line, sep + 1)
@@ -168,7 +170,18 @@ local omnifunc = function(opts)
 
   local wrapped = function(row, col)
     if not opts.filetypes or filetypes[vim.bo.filetype] then
-      return fetch(row, col)
+      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
+      if utils.in_comment(line) then
+        return nil
+      else
+        local go, items = fetch(line, row, col)
+        if go then
+          return items
+        else
+          utils.debug_err(items)
+          return nil
+        end
+      end
     else
       return nil
     end
