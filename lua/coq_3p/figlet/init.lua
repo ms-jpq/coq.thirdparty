@@ -9,25 +9,37 @@ return function(spec)
     (function()
     local acc = {}
     if #fig_path > 0 then
+      local stdout = nil
+
+      local fin = function()
+        local fonts_dir = table.concat(stdout, "")
+        vim.fn.readdir(
+          fonts_dir,
+          function(name)
+            if vim.endswith(name, ".flf") then
+              local font = fonts_dir .. "/" .. name
+              table.insert(acc, font)
+            end
+          end
+        )
+      end
+
       vim.fn.jobstart(
         {fig_path, "-I", "2"},
         {
           stderr_buffered = true,
           stdout_buffered = true,
+          on_exit = function(_, code)
+            locked = false
+            if code == 0 and stdout then
+              fin()
+            end
+          end,
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local fonts_dir = table.concat(msg, "")
-            vim.fn.readdir(
-              fonts_dir,
-              function(name)
-                if vim.endswith(name, ".flf") then
-                  local font = fonts_dir .. "/" .. name
-                  table.insert(acc, font)
-                end
-              end
-            )
+            stdout = msg
           end
         }
       )
@@ -48,53 +60,62 @@ return function(spec)
       local font = utils.pick(fonts)
       local c_on, c_off = utils.comment()
 
+      local stdout = nil
+
+      local fin = function()
+        local big_fig = (function()
+          local linesep = utils.linesep()
+          local acc = {}
+          for _, line in ipairs(stdout) do
+            table.insert(acc, c_on(line))
+          end
+          return table.concat(acc, linesep)
+        end)()
+
+        local text_edit =
+          (function()
+          local _, u16 = vim.str_utfindex(args.line)
+          local edit = {
+            newText = big_fig,
+            range = {
+              start = {line = row, character = 0},
+              ["end"] = {line = row, character = u16}
+            }
+          }
+          return edit
+        end)()
+
+        callback {
+          isIncomplete = false,
+          items = {
+            {
+              label = "💭",
+              textEdit = text_edit,
+              detail = big_fig,
+              kind = vim.lsp.protocol.CompletionItemKind.Unit,
+              filterText = trigger
+            }
+          }
+        }
+      end
+
       local chan =
         vim.fn.jobstart(
         {fig_path, "-f", font},
         {
           stderr_buffered = true,
           stdout_buffered = true,
-          on_exit = function()
+          on_exit = function(_, code)
             locked = false
+            if code == 0 and stdout then
+              fin()
+            end
           end,
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local big_fig = (function()
-              local linesep = utils.linesep()
-              local acc = {}
-              for _, line in ipairs(msg) do
-                table.insert(acc, c_on(line))
-              end
-              return table.concat(acc, linesep)
-            end)()
-
-            local text_edit =
-              (function()
-              local _, u16 = vim.str_utfindex(args.line)
-              local edit = {
-                newText = big_fig,
-                range = {
-                  start = {line = row, character = 0},
-                  ["end"] = {line = row, character = u16}
-                }
-              }
-              return edit
-            end)()
-
-            callback {
-              isIncomplete = false,
-              items = {
-                {
-                  label = "💭",
-                  textEdit = text_edit,
-                  detail = big_fig,
-                  kind = vim.lsp.protocol.CompletionItemKind.Unit,
-                  filterText = trigger
-                }
-              }
-            }
+            stdout = msg
           end
         }
       )

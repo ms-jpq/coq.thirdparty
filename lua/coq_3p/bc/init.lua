@@ -14,31 +14,40 @@ return function(spec)
     else
       locked = true
 
+      local stdout = nil
+
+      local fin = function()
+        local ans = table.concat(stdout, "")
+        callback {
+          isIncomplete = false,
+          items = {
+            {
+              label = "= " .. ans,
+              insertText = ans,
+              detail = match .. " = " .. ans,
+              kind = vim.lsp.protocol.CompletionItemKind.Unit
+            }
+          }
+        }
+      end
+
       local chan =
         vim.fn.jobstart(
         {bc_path},
         {
           stderr_buffered = true,
           stdout_buffered = true,
-          on_exit = function()
+          on_exit = function(_, code)
             locked = false
+            if code == 0 and stdout then
+              fin()
+            end
           end,
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local ans = table.concat(msg, "")
-            callback {
-              isIncomplete = false,
-              items = {
-                {
-                  label = "= " .. ans,
-                  insertText = ans,
-                  detail = match .. " = " .. ans,
-                  kind = vim.lsp.protocol.CompletionItemKind.Unit
-                }
-              }
-            }
+            stdout = msg
           end
         }
       )
