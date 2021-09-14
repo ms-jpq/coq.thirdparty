@@ -60,7 +60,8 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local big_cow = table.concat(msg, "\n")
+            local linesep = M.linesep()
+            local big_cow = table.concat(msg, linesep)
             callback {
               isIncomplete = false,
               items = {

@@ -16,6 +16,19 @@ M.debug_err = function(...)
   end
 end
 
+M.linesep = function()
+  local nl = vim.bo.fileformat
+  if nl == "unix" then
+    return "\n"
+  elseif nl == "dos" then
+    return "\r\n"
+  elseif nl == "mac" then
+    return "\r"
+  else
+    assert(false)
+  end
+end
+
 M.split_line = function(line, col)
   vim.validate {
     line = {line, "string"},
