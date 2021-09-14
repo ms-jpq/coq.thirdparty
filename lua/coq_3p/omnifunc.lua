@@ -143,9 +143,9 @@ local omnifunc = function(opts)
         else
           local line =
             vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
-          local sep = math.min(col, pos) + 1
+          local sep = math.min(col, pos)
           local b_search = string.sub(line, 0, sep)
-          local f_search = string.sub(line, sep)
+          local f_search = string.sub(line, sep + 1)
 
           local b =
             string.reverse(
