@@ -36,7 +36,9 @@ return function(spec)
 
   local locked = false
   return function(args, callback)
-    if #cows > 0 and not locked then
+    if #cows <= 0 or locked then
+      callback(nil)
+    else
       locked = true
       local cow, style = utils.pick(cows), utils.pick(styles)
 
@@ -73,6 +75,7 @@ return function(spec)
 
       if chan <= 0 then
         locked = false
+        callback(nil)
       else
         vim.fn.chansend(chan, args.line)
         vim.fn.chanclose(chan, "stdin")
