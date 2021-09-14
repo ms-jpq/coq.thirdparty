@@ -126,7 +126,8 @@ local omnifunc = function(opts)
             string.reverse(
             string.match(string.reverse(b_search), "^[^%s]+") or ""
           )
-          local b = string.match(f_search, "[^%s]+") or ""
+          local b =
+            string.match(f_search, f == "" and "[^%s]+" or "^[^%s]+") or ""
 
           local cword = f .. b
           return cword
