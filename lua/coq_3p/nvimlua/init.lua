@@ -1,4 +1,8 @@
 return function(spec)
+  vim.validate {
+    conf_only = {spec.conf_only, "boolean"}
+  }
+
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
 
   local kind_map = {
@@ -50,8 +54,21 @@ return function(spec)
     return {isIncomplete = false, items = acc}
   end
 
-  return function(args, callback)
+  local conf_dir = vim.fn.stdpath("config")
+
+  local should = function()
     if vim.bo.filetype ~= "lua" then
+      return false
+    elseif spec.conf_only then
+      local bufname = vim.api.nvim_buf_get_name(0)
+      return vim.fn.findfile(bufname, conf_dir)
+    else
+      return false
+    end
+  end
+
+  return function(args, callback)
+    if not should() then
       callback(nil)
     else
       local row, col = unpack(args.pos)
