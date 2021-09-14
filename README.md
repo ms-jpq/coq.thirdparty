@@ -51,6 +51,8 @@ Live nvim Lua env.
 
 `{ src = "bc", short_name = "MATH", precision = 6 }`
 
+![bc.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/bc.gif)
+
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
 ### Cowsay
