@@ -55,14 +55,6 @@ Live nvim Lua env.
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
-### Cowsay
-
-`{ src = "cow" }`
-
-![cowsay.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/cowsay.gif)
-
-requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
-
 ### Banner
 
 `{ src = "figlet", short_name = "BIG" }`
@@ -70,6 +62,14 @@ requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 ![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
 
 requires - [`figlet`](https://linux.die.net/man/6/figlet)
+
+### Moo
+
+`{ src = "cow" }`
+
+![cowsay.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/cowsay.gif)
+
+requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
 ## Third Parties
 
