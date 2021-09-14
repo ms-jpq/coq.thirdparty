@@ -37,21 +37,37 @@ local completefunc_items = function(matches)
       info = {match.info, "string", true}
     }
 
-    local label = (function()
-      local label = match.abbr or match.word
-      return match.menu and label .. "\t" .. match.menu or label
-    end)()
+    local kind_taken, menu_taken = false, false
 
     local kind = (function()
       local lkind = string.lower(match.kind or "")
+      if kind_map[lkind] then
+        kind_taken = true
+        return kind_map[lkind]
+      end
       local lmenu = string.lower(match.menu or "")
-      return kind_map[lkind] or kind_map[lmenu]
+      if kind_map[lmenu] then
+        menu_taken = true
+        return kind_map[lmenu]
+      end
+
+      return nil
+    end)()
+
+    local label = (function()
+      local label = match.abbr or match.word
+      if match.menu and not menu_taken then
+        menu_taken = true
+        return label .. "\t" .. match.menu
+      else
+        return label
+      end
     end)()
 
     local detail = (function()
       if match.info then
         return match.info
-      elseif match.kind and not kind then
+      elseif match.kind and not kind_taken then
         return match.kind
       else
         return nil
