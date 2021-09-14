@@ -146,14 +146,15 @@ local omnifunc = function(opts)
           local sep = math.min(col, pos) + 1
           local b_search = string.sub(line, 0, sep)
           local f_search = string.sub(line, sep)
-          local f =
+
+          local b =
             string.reverse(
             string.match(string.reverse(b_search), "^[^%s]+") or ""
           )
-          local b =
+          local f =
             string.match(f_search, f == "" and "[^%s]+" or "^[^%s]+") or ""
 
-          local cword = f .. b
+          local cword = b .. f
           return cword
         end
       end)()
