@@ -61,17 +61,25 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            local big_fig = table.concat(msg, "\n")
+            local big_fig = (function()
+              local lhs, rhs = utils.comment_pairs()
+              local acc = {}
+              for _, line in ipairs(msg) do
+                local commented = lhs .. line .. rhs
+                table.insert(acc, commented)
+              end
+              return table.concat(acc, "\n")
+            end)()
+
             callback {
               isIncomplete = false,
               items = {
                 {
                   label = "💭",
-                  insertText = utils.snippet_escape(big_fig),
+                  insertText = "\n" .. big_fig,
                   detail = big_fig,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit,
-                  filterText = trigger,
-                  insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
+                  filterText = trigger
                 }
               }
             }

@@ -57,6 +57,16 @@ M.in_comment = function(line)
   end
 end
 
+M.comment_pairs = function()
+  local commentstring = vim.bo.commentstring or ""
+  if #commentstring == 0 then
+    return "", ""
+  else
+    local lhs, rhs = unpack(vim.split(commentstring, "%s", true))
+    return lhs, rhs
+  end
+end
+
 M.rand_between = function(lo, hi)
   vim.validate {
     lo = {lo, "number"},
