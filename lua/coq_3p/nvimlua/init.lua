@@ -56,22 +56,30 @@ return function(spec)
   end
 
   local conf_dir = p_norm(vim.fn.stdpath("config"))
-  local should = function()
+
+  local should = function(line, col)
     if vim.bo.filetype ~= "lua" then
       return false
-    elseif spec.conf_only then
-      local bufname = p_norm(vim.api.nvim_buf_get_name(0))
-      return vim.startswith(bufname, conf_dir)
-    else
+    end
+
+    local cword = utils.cword(line, col)
+    if #cword == 0 then
       return false
     end
+
+    if spec.conf_only then
+      local bufname = p_norm(vim.api.nvim_buf_get_name(0))
+      return vim.startswith(bufname, conf_dir)
+    end
+
+    return true
   end
 
   return function(args, callback)
-    if not should() then
+    local _, col = unpack(args.pos)
+    if not should(args.line, col) then
       callback(nil)
     else
-      local _, col = unpack(args.pos)
       if utils.in_comment(args.line) then
         callback(nil)
       else
