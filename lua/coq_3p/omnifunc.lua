@@ -151,6 +151,12 @@ local omnifunc = function(opts)
   end
 
   local wrapped = function(line, row, col)
+    vim.validate {
+      line = {line, "string"},
+      row = {row, "number"},
+      col = {col, "number"}
+    }
+
     if not opts.filetypes or filetypes[vim.bo.filetype] then
       if utils.in_comment(line) then
         return nil

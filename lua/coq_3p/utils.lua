@@ -17,6 +17,11 @@ M.debug_err = function(...)
 end
 
 local split_line = function(line, col)
+  vim.validate {
+    line = {line, "string"},
+    col = {col, "number"}
+  }
+
   local c = math.min(math.max(0, col), #line)
   local lhs = string.sub(line, 1, c)
   local rhs = string.sub(line, c + 1)
