@@ -30,10 +30,10 @@ local completefunc_items = function(matches)
     vim.validate {
       match = {match, "table"},
       word = {match.word, "string"},
-      abbr = {match.abbr, "string", nil},
-      menu = {match.menu, "string", nil},
-      kind = {match.kind, "string", nil},
-      info = {match.info, "string", nil}
+      abbr = {match.abbr, "string", true},
+      menu = {match.menu, "string", true},
+      kind = {match.kind, "string", true},
+      info = {match.info, "string", true}
     }
 
     local label = (function()
