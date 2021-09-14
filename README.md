@@ -4,7 +4,7 @@
 
 ---
 
-First party lua sources & third party integration for [`coq.nvim`](https://github.com/ms-jpq/coq_nvim)
+**First party lua sources** & _third party integration_ for [`coq.nvim`](https://github.com/ms-jpq/coq_nvim)
 
 See [`:COQhelp custom_sources`](https://github.com/ms-jpq/coq_nvim/tree/coq/docs/CUSTOM_SOURCES.md)
 
