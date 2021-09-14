@@ -44,7 +44,8 @@ local completefunc_items = function(matches)
 
     local kind = (function()
       local lkind = string.lower(match.kind or "")
-      return kind_map[lkind]
+      local lmenu = string.lower(match.menu or "")
+      return kind_map[lkind] or kind_map[lmenu]
     end)()
 
     local detail = (function()
