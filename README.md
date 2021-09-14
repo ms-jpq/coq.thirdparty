@@ -15,6 +15,7 @@ Install the repo the normal way, and then:
 ```lua
 require("coq_3p") {
   { src = "demo" },
+  { src = "nvimlua", short_name = "nLUA" },
   { src = "vimtex", short_name = "vTEX" },
   ...
 }
