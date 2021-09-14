@@ -21,7 +21,7 @@ return function(sources)
       src = {spec.src, "string"},
       short_name = {spec.short_name, "string", true}
     }
-    local mod = "coq_3rd." .. spec.src
+    local mod = "coq_3p." .. spec.src
     local go, factory = pcall(require, mod)
     if go then
       local go, fn = pcall(factory, spec)

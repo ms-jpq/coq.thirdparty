@@ -20,7 +20,7 @@ require("coq_3p") {
 }
 ```
 
-`require("coq_3rd")` takes a list of `{ src = ..., short_name = ..., ... }` objects.
+`require("coq_3p")` takes a list of `{ src = ..., short_name = ..., ... }` objects.
 
 `src` is required
 
