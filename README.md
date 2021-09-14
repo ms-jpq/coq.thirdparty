@@ -1,4 +1,4 @@
-# coq.nvim Thirdparty Sources
+# coq.nvim (first & third) party sources
 
 **PR welcome**
 
