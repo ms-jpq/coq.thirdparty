@@ -59,7 +59,7 @@ M.in_comment = function(line)
   }
 
   local commentstring = vim.bo.commentstring or ""
-  if #commentstring == 0 then
+  if #commentstring <= 0 then
     return false
   else
     local lhs, rhs = unpack(vim.split(commentstring, "%s", true))
@@ -77,7 +77,7 @@ M.comment = function(cstring)
 
   local lhs, rhs = (function()
     local commentstring = cstring or vim.bo.commentstring or ""
-    if #commentstring == 0 then
+    if #commentstring <= 0 then
       return "", ""
     else
       local lhs, rhs = unpack(vim.split(commentstring, "%s", true))
@@ -89,7 +89,6 @@ M.comment = function(cstring)
     vim.validate {
       line = {line, "string"}
     }
-    print(vim.inspect {lhs, rhs})
     if vim.startswith(line, lhs) and vim.endswith(line, rhs) then
       local l1 = string.sub(line, #lhs + 1)
       local l2 = string.sub(l1, 1, -(#rhs + 1))

@@ -41,7 +41,7 @@ return function(spec)
     local _, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
 
-    if #cows <= 0 or locked or not vim.endswith(before_cursor, trigger) then
+    if (#cows <= 0) or locked or not vim.endswith(before_cursor, trigger) then
       callback(nil)
     else
       locked = true

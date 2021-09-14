@@ -60,7 +60,7 @@ return function(spec)
       return false
     end
 
-    if #match == 0 then
+    if #match <= 0 then
       return false
     end
 

@@ -40,7 +40,7 @@ return function(spec)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
 
-    if #fonts <= 0 or locked or not vim.endswith(before_cursor, trigger) then
+    if (#fonts <= 0) or locked or not vim.endswith(before_cursor, trigger) then
       callback(nil)
     else
       locked = true
