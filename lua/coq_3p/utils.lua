@@ -57,14 +57,45 @@ M.in_comment = function(line)
   end
 end
 
-M.comment_pairs = function()
-  local commentstring = vim.bo.commentstring or ""
-  if #commentstring == 0 then
-    return "", ""
-  else
-    local lhs, rhs = unpack(vim.split(commentstring, "%s", true))
-    return lhs, rhs
+M.comment = function(cstring)
+  vim.validate {
+    cstring = {cstring, "string", true}
+  }
+
+  local lhs, rhs = (function()
+    local commentstring = cstring or vim.bo.commentstring or ""
+    if #commentstring == 0 then
+      return "", ""
+    else
+      local lhs, rhs = unpack(vim.split(commentstring, "%s", true))
+      return lhs or "", rhs or ""
+    end
+  end)()
+
+  local off = function(line)
+    vim.validate {
+      line = {line, "string"}
+    }
+    print(vim.inspect {lhs, rhs})
+    if vim.startswith(line, lhs) and vim.endswith(line, rhs) then
+      local l1 = string.sub(line, #lhs + 1)
+      local l2 = string.sub(l1, 1, -(#rhs + 1))
+      return l2
+    else
+      return line
+    end
   end
+
+  local on = function(line)
+    vim.validate {
+      line = {line, "string"}
+    }
+
+    local uncommented = off(line)
+    return lhs .. uncommented .. rhs
+  end
+
+  return on, off
 end
 
 M.rand_between = function(lo, hi)

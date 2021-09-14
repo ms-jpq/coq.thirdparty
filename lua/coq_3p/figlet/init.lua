@@ -46,7 +46,9 @@ return function(spec)
       callback(nil)
     else
       locked = true
+
       local font = utils.pick(fonts)
+      local c_on, c_off = utils.comment()
 
       local chan =
         vim.fn.jobstart(
@@ -62,11 +64,9 @@ return function(spec)
           end,
           on_stdout = function(_, msg)
             local big_fig = (function()
-              local lhs, rhs = utils.comment_pairs()
               local acc = {}
               for _, line in ipairs(msg) do
-                local commented = lhs .. line .. rhs
-                table.insert(acc, commented)
+                table.insert(acc, c_on(line))
               end
               return table.concat(acc, "\n")
             end)()
@@ -91,7 +91,7 @@ return function(spec)
         locked = false
         callback {isIncomplete = false, items = {}}
       else
-        vim.fn.chansend(chan, args.line)
+        vim.fn.chansend(chan, c_off(before_cursor))
         vim.fn.chanclose(chan, "stdin")
       end
     end

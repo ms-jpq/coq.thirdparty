@@ -84,7 +84,7 @@ return function(spec)
         locked = false
         callback {isIncomplete = false, items = {}}
       else
-        vim.fn.chansend(chan, args.line)
+        vim.fn.chansend(chan, before_cursor)
         vim.fn.chanclose(chan, "stdin")
       end
     end
