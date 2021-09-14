@@ -95,4 +95,4 @@ From the users' prespective, any change I make should be transparent, ie. I will
 
 For other plugin developers, if you want to re-use my code. Make a COPY, do not just `require "blah"` from this repo.
 
-I want to reserve the ability to fearlessly re-factor my code.
+I want to reserve the ability to fearlessly re-factor.
