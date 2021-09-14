@@ -1,3 +1,5 @@
+local DEBUG = vim.env.COQ_DEBUG
+
 local kind_map =
   (function()
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
@@ -36,6 +38,10 @@ local completefunc_items = function(matches)
       kind = {match.kind, "string", true},
       info = {match.info, "string", true}
     }
+
+    if DEBUG then
+      print(vim.inspect(match))
+    end
 
     local kind_taken, menu_taken = false, false
 
