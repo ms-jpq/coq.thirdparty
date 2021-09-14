@@ -42,7 +42,7 @@ return function(spec)
 
     local acc = {}
     for key, val in pairs(cur) do
-      if string.match(key, "^[A-z]+$") then
+      if vim.fn.matchstr(key, [[\v^\w(\w|\d)*$]]) == key then
         local item = {
           label = key,
           insertText = fin and "." .. key or key,
