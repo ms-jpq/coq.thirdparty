@@ -34,12 +34,6 @@ return function(spec)
 
   local styles = {"-b", "-d", "-g", "-p", "-s", "-t", "-w", "-y"}
 
-  local escape = function(text)
-    local l1 = string.gsub(text, [[\]], [[\\]])
-    local l2 = string.gsub(l1, "%$", [[\$]])
-    return l2
-  end
-
   local locked = false
   return function(args, callback)
     if #cows > 0 and not locked then
@@ -65,7 +59,7 @@ return function(spec)
               items = {
                 {
                   label = "🐮",
-                  insertText = escape(big_cow),
+                  insertText = utils.snippet_escape(big_cow),
                   detail = big_cow,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit,
                   filterText = " ",

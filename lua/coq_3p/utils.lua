@@ -79,4 +79,14 @@ M.pick = function(list)
   return item
 end
 
+M.snippet_escape = function(text)
+  vim.validate {
+    text = {text, "string"}
+  }
+
+  local l1 = string.gsub(text, [[\]], [[\\]])
+  local l2 = string.gsub(l1, "%$", [[\$]])
+  return l2
+end
+
 return M
