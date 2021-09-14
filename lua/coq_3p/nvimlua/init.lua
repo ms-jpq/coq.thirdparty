@@ -1,4 +1,5 @@
 return function(spec)
+  local is_win = vim.fn.has("win32") == 1
   local utils = require("coq_3p.utils")
 
   vim.validate {
@@ -18,12 +19,9 @@ return function(spec)
     boolean = lsp_kinds.Property
   }
 
-  local parse = function(line, row, col)
-    local before_cursor = string.sub(line, 1, col + 1)
-    local match =
-      string.reverse(
-      string.match(string.reverse(before_cursor), "^[^%s]+") or ""
-    )
+  local parse = function(line, col)
+    local before_cursor = utils.split_line(line, col)
+    local match = vim.fn.matchstr(before_cursor, [[\v(\w|\.)+$]])
     local path = vim.split(match, ".", true)
 
     local cur, seen = _G, {"_G"}
@@ -53,7 +51,6 @@ return function(spec)
     return {isIncomplete = false, items = acc}
   end
 
-  local is_win = vim.fn.has("win32") == 1
   local p_norm = function(path)
     return is_win and string.lower(path) or path
   end
@@ -74,11 +71,11 @@ return function(spec)
     if not should() then
       callback(nil)
     else
-      local row, col = unpack(args.pos)
+      local _, col = unpack(args.pos)
       if utils.in_comment(args.line) then
         callback(nil)
       else
-        local go, parsed = pcall(parse, args.line, row, col)
+        local go, parsed = pcall(parse, args.line, col)
         if go then
           callback(parsed)
         else

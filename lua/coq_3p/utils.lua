@@ -16,7 +16,7 @@ M.debug_err = function(...)
   end
 end
 
-local split_line = function(line, col)
+M.split_line = function(line, col)
   vim.validate {
     line = {line, "string"},
     col = {col, "number"}
@@ -34,7 +34,7 @@ M.cword = function(line, col)
     col = {col, "number"}
   }
 
-  local lhs, rhs = split_line(line, col)
+  local lhs, rhs = M.split_line(line, col)
   local search_b = vim.fn.matchstr(lhs, [[\v\w+$]])
   local search_f = vim.fn.matchstr(rhs, [[\v^\w+]])
   return search_b .. search_f
