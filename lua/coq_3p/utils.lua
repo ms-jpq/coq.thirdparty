@@ -57,4 +57,26 @@ M.in_comment = function(line)
   end
 end
 
+M.rand_between = function(lo, hi)
+  vim.validate {
+    lo = {lo, "number"},
+    hi = {hi, "number"}
+  }
+  assert(hi >= lo)
+
+  local lo, hi = math.ceil(lo), math.floor(hi)
+  return math.floor(math.random() * (hi - lo + 1) + lo)
+end
+
+M.pick = function(list)
+  vim.validate {
+    list = {list, "table"}
+  }
+  local length = #list
+  assert(length > 0)
+  local item = list[M.rand_between(1, length)]
+  assert(item)
+  return item
+end
+
 return M
