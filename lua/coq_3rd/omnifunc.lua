@@ -21,7 +21,8 @@ end)()
 
 local completefunc_items = function(matches)
   vim.validate {
-    matches = {matches, "table"}
+    matches = {matches, "table"},
+    words = {matches.words, "table", true}
   }
 
   local words = matches.words and matches.words or matches
