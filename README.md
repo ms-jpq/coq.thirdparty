@@ -30,7 +30,7 @@ The rest of object are specific to each individual source.
 
 ## Sources
 
-### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3rd/demo/init.lua)
+### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3p/demo/init.lua)
 
 `{ src = "demo" }`
 
