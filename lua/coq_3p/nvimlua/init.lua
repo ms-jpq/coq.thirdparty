@@ -42,7 +42,7 @@ return function(spec)
 
     local acc = {}
     for key, val in pairs(cur) do
-      if #(string.match(key, "^[A-z]+$") or "") == #key then
+      if string.match(key, "^[A-z]+$") then
         local item = {
           label = key,
           insertText = fin and "." .. key or key,
