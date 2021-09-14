@@ -1,3 +1,5 @@
+local trigger = " "
+
 return function(spec)
   local utils = require("coq_3p.utils")
 
@@ -36,9 +38,12 @@ return function(spec)
 
   local locked = false
   return function(args, callback)
+    local _, col = unpack(args.pos)
+    local before_cursor = utils.split_line(args.line, col)
+
     if #cows <= 0 then
       callback {isIncomplete = false, items = {}}
-    elseif locked then
+    elseif locked or not vim.endswith(before_cursor, trigger) then
       callback(nil)
     else
       locked = true
@@ -66,7 +71,7 @@ return function(spec)
                   insertText = utils.snippet_escape(big_cow),
                   detail = big_cow,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit,
-                  filterText = " ",
+                  filterText = trigger,
                   insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
                 }
               }

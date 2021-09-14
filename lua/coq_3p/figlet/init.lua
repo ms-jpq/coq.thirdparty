@@ -1,3 +1,5 @@
+local trigger = " "
+
 return function(spec)
   local utils = require("coq_3p.utils")
 
@@ -35,9 +37,12 @@ return function(spec)
 
   local locked = false
   return function(args, callback)
+    local _, col = unpack(args.pos)
+    local before_cursor = utils.split_line(args.line, col)
+
     if #fonts <= 0 then
       callback {isIncomplete = false, items = {}}
-    elseif locked then
+    elseif locked or not vim.endswith(before_cursor, trigger) then
       callback(nil)
     else
       locked = true
@@ -45,7 +50,7 @@ return function(spec)
 
       local chan =
         vim.fn.jobstart(
-        {fig_path, "-c", "-f", font},
+        {fig_path, "-f", font},
         {
           stderr_buffered = true,
           stdout_buffered = true,
@@ -61,11 +66,11 @@ return function(spec)
               isIncomplete = false,
               items = {
                 {
-                  label = "🀄️",
+                  label = "💭",
                   insertText = utils.snippet_escape(big_fig),
                   detail = big_fig,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit,
-                  filterText = " ",
+                  filterText = trigger,
                   insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
                 }
               }
