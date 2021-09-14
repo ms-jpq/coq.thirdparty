@@ -1,4 +1,5 @@
 return function(spec)
+  local is_win = vim.fn.has("win32") == 1
   local utils = require("coq_3p.utils")
 
   vim.validate {
@@ -18,23 +19,14 @@ return function(spec)
     boolean = lsp_kinds.Property
   }
 
-  local parse = function(line, row, col)
-    local before_cursor = string.sub(line, 1, col + 1)
-    local match =
-      string.reverse(
-      string.match(string.reverse(before_cursor), "^[^%s]+") or ""
-    )
+  local parse = function(match)
     local path = vim.split(match, ".", true)
 
     local cur, seen = _G, {"_G"}
-    local fin = false
     for idx, key in ipairs(path) do
       if type(cur) == "table" and type(cur[key]) == "table" then
         cur = cur[key]
         table.insert(seen, key)
-        if idx == #path then
-          fin = true
-        end
       else
         break
       end
@@ -46,7 +38,7 @@ return function(spec)
       if vim.fn.matchstr(key, [[\v^\w(\w|\d)*$]]) == key then
         local item = {
           label = key,
-          insertText = fin and "." .. key or key,
+          insertText = key,
           kind = kind_map[type(val)],
           detail = table.concat(vim.tbl_flatten {seen, {key}}, ".")
         }
@@ -57,39 +49,47 @@ return function(spec)
     return {isIncomplete = false, items = acc}
   end
 
-  local is_win = vim.fn.has("win32") == 1
   local p_norm = function(path)
     return is_win and string.lower(path) or path
   end
 
   local conf_dir = p_norm(vim.fn.stdpath("config"))
-  local should = function()
+
+  local should = function(line, match)
     if vim.bo.filetype ~= "lua" then
       return false
-    elseif spec.conf_only then
-      local bufname = p_norm(vim.api.nvim_buf_get_name(0))
-      return vim.startswith(bufname, conf_dir)
-    else
+    end
+
+    if #match == 0 then
       return false
     end
+
+    if utils.in_comment(line) then
+      return false
+    end
+
+    if spec.conf_only then
+      local bufname = p_norm(vim.api.nvim_buf_get_name(0))
+      return vim.startswith(bufname, conf_dir)
+    end
+
+    return true
   end
 
   return function(args, callback)
-    if not should() then
+    local _, col = unpack(args.pos)
+    local before_cursor = utils.split_line(args.line, col)
+    local match = vim.fn.matchstr(before_cursor, [[\v(\w|\.)+$]])
+
+    if not should(args.line, match) then
       callback(nil)
     else
-      local row, col = unpack(args.pos)
-      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
-      if utils.in_comment(line) then
-        callback(nil)
+      local go, parsed = pcall(parse, match)
+      if go then
+        callback(parsed)
       else
-        local go, parsed = pcall(parse, line, row, col)
-        if go then
-          callback(parsed)
-        else
-          callback(nil)
-          utils.debug_err(parsed)
-        end
+        callback(nil)
+        utils.debug_err(parsed)
       end
     end
   end

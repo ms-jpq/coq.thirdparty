@@ -1,0 +1,112 @@
+local trigger = " "
+
+return function(spec)
+  local utils = require("coq_3p.utils")
+
+  local fig_path = vim.fn.exepath("figlet")
+
+  local fonts =
+    (function()
+    local acc = {}
+    if #fig_path > 0 then
+      vim.fn.jobstart(
+        {fig_path, "-I", "2"},
+        {
+          stderr_buffered = true,
+          stdout_buffered = true,
+          on_stderr = function(_, msg)
+            utils.debug_err(unpack(msg))
+          end,
+          on_stdout = function(_, msg)
+            local fonts_dir = table.concat(msg, "")
+            vim.fn.readdir(
+              fonts_dir,
+              function(name)
+                if vim.endswith(name, ".flf") then
+                  local font = fonts_dir .. "/" .. name
+                  table.insert(acc, font)
+                end
+              end
+            )
+          end
+        }
+      )
+      return acc
+    end
+  end)()
+
+  local locked = false
+  return function(args, callback)
+    local row, col = unpack(args.pos)
+    local before_cursor = utils.split_line(args.line, col)
+
+    if #fonts <= 0 then
+      callback {isIncomplete = false, items = {}}
+    elseif locked or not vim.endswith(before_cursor, trigger) then
+      callback(nil)
+    else
+      locked = true
+
+      local font = utils.pick(fonts)
+      local c_on, c_off = utils.comment()
+
+      local chan =
+        vim.fn.jobstart(
+        {fig_path, "-f", font},
+        {
+          stderr_buffered = true,
+          stdout_buffered = true,
+          on_exit = function()
+            locked = false
+          end,
+          on_stderr = function(_, msg)
+            utils.debug_err(unpack(msg))
+          end,
+          on_stdout = function(_, msg)
+            local big_fig = (function()
+              local acc = {}
+              for _, line in ipairs(msg) do
+                table.insert(acc, c_on(line))
+              end
+              return table.concat(acc, "\n")
+            end)()
+
+            local text_edit =
+              (function()
+              local _, u16 = vim.str_utfindex(args.line)
+              local edit = {
+                newText = "\n" .. big_fig,
+                range = {
+                  start = {line = row, character = 0},
+                  ["end"] = {line = row, character = u16}
+                }
+              }
+              return edit
+            end)()
+
+            callback {
+              isIncomplete = false,
+              items = {
+                {
+                  label = "💭",
+                  textEdit = text_edit,
+                  detail = big_fig,
+                  kind = vim.lsp.protocol.CompletionItemKind.Unit,
+                  filterText = trigger
+                }
+              }
+            }
+          end
+        }
+      )
+
+      if chan <= 0 then
+        locked = false
+        callback {isIncomplete = false, items = {}}
+      else
+        vim.fn.chansend(chan, c_off(before_cursor))
+        vim.fn.chanclose(chan, "stdin")
+      end
+    end
+  end
+end

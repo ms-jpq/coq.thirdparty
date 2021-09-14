@@ -1,7 +1,7 @@
 -- !!WARN !!
 
 --
--- THIS IS **NOT** STABLE DO NOT DEPEND ON IMPLEMENTATION DETAIL
+-- THIS IS **NOT** STABLE API
 --
 
 -- !!WARN !!
@@ -140,27 +140,7 @@ local omnifunc = function(opts)
     if pos == -2 or pos == -3 then
       return nil
     else
-      local cword =
-        (function()
-        if pos < 0 or pos >= col then
-          return vim.fn.expand("<cword>")
-        else
-          local sep = math.min(col, pos)
-          local b_search = string.sub(line, 0, sep)
-          local f_search = string.sub(line, sep + 1)
-
-          local b =
-            string.reverse(
-            string.match(string.reverse(b_search), "^[^%s]+") or ""
-          )
-          local f =
-            string.match(f_search, b == "" and "[^%s]+" or "^[^%s]+") or ""
-
-          local cword = b .. f
-          return cword
-        end
-      end)()
-
+      local cword = utils.cword(line, pos)
       local matches = omnifunc(0, cword) or {}
       local items = completefunc_items(matches)
 
@@ -168,9 +148,14 @@ local omnifunc = function(opts)
     end
   end
 
-  local wrapped = function(row, col)
+  local wrapped = function(line, row, col)
+    vim.validate {
+      line = {line, "string"},
+      row = {row, "number"},
+      col = {col, "number"}
+    }
+
     if not opts.filetypes or filetypes[vim.bo.filetype] then
-      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
       if utils.in_comment(line) then
         return nil
       else
@@ -192,9 +177,9 @@ end
 
 local wrap = function(opts)
   local omni = omnifunc(opts)
-  return function(arg, callback)
-    local row, col = unpack(arg.pos)
-    local items = omni(row, col)
+  return function(args, callback)
+    local row, col = unpack(args.pos)
+    local items = omni(args.line, row, col)
     callback(items)
   end
 end
