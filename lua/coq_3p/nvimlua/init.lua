@@ -79,11 +79,10 @@ return function(spec)
       callback(nil)
     else
       local row, col = unpack(args.pos)
-      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ""
-      if utils.in_comment(line) then
+      if utils.in_comment(args.line) then
         callback(nil)
       else
-        local go, parsed = pcall(parse, line, row, col)
+        local go, parsed = pcall(parse, args.line, row, col)
         if go then
           callback(parsed)
         else
