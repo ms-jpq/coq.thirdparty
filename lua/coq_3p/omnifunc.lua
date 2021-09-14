@@ -174,7 +174,7 @@ local omnifunc = function(opts)
       if utils.in_comment(line) then
         return nil
       else
-        local go, items = fetch(line, row, col)
+        local go, items = pcall(fetch, line, row, col)
         if go then
           return items
         else
