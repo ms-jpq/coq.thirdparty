@@ -37,7 +37,7 @@ return function(spec)
 
   local locked = false
   return function(args, callback)
-    local _, col = unpack(args.pos)
+    local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
 
     if #fonts <= 0 then
@@ -71,12 +71,25 @@ return function(spec)
               return table.concat(acc, "\n")
             end)()
 
+            local text_edit =
+              (function()
+              local _, u16 = vim.str_utfindex(args.line)
+              local edit = {
+                newText = "\n" .. big_fig,
+                range = {
+                  start = {line = row, character = 0},
+                  ["end"] = {line = row, character = u16}
+                }
+              }
+              return edit
+            end)()
+
             callback {
               isIncomplete = false,
               items = {
                 {
                   label = "💭",
-                  insertText = "\n" .. big_fig,
+                  textEdit = text_edit,
                   detail = big_fig,
                   kind = vim.lsp.protocol.CompletionItemKind.Unit,
                   filterText = trigger
