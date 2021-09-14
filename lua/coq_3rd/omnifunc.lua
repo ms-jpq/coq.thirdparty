@@ -26,15 +26,49 @@ local completefunc_items = function(matches)
 
   local words = matches.words and matches.words or matches
 
-  local acc = {}
-  for _, match in ipairs(words) do
-    local kind = kind_map[match.kind and string.lower(match.kind) or nil]
+  local parse = function(match)
+    vim.validate {
+      match = {match, "table"},
+      word = {match.word, "string"},
+      abbr = {match.abbr, "string", nil},
+      menu = {match.menu, "string", nil},
+      kind = {match.kind, "string", nil},
+      info = {match.info, "string", nil}
+    }
+
+    local label = (function()
+      local label = match.abbr or match.word
+      return match.menu and label .. "\t" .. match.menu or label
+    end)()
+
+    local kind = (function()
+      local lkind = string.lower(match.kind or "")
+      return kind_map[lkind]
+    end)()
+
+    local detail = (function()
+      if match.info then
+        return match.info
+      elseif match.kind and not kind then
+        return match.kind
+      else
+        return nil
+      end
+    end)()
+
     local item = {
-      label = match.abbr or match.word,
+      label = label,
       insertText = match.word,
       kind = kind,
-      detail = match.info
+      detail = detail
     }
+
+    return item
+  end
+
+  local acc = {}
+  for _, match in ipairs(words) do
+    local item = parse(match)
     table.insert(acc, item)
   end
 
