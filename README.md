@@ -29,7 +29,7 @@ If `short_name` is not specified, it is uppercase `src`.
 
 The rest of object are specific to each individual source.
 
-## Lua Sources
+## First party
 
 ### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3p/demo/init.lua)
 
@@ -71,7 +71,7 @@ requires - [`figlet`](https://linux.die.net/man/6/figlet)
 
 requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
-## Third Parties
+## Third parties
 
 ### [VimTex](https://github.com/lervag/vimtex)
 
