@@ -107,6 +107,9 @@ return function(spec)
       else
         vim.fn.chansend(chan, before_cursor)
         vim.fn.chanclose(chan, "stdin")
+        return function()
+          vim.fn.jobstop(chan)
+        end
       end
     end
   end

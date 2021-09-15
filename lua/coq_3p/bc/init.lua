@@ -68,6 +68,9 @@ return function(spec)
         local feed = scale .. match .. "\n"
         vim.fn.chansend(chan, feed)
         vim.fn.chanclose(chan, "stdin")
+        return function()
+          vim.fn.jobstop(chan)
+        end
       end
     end
   end
