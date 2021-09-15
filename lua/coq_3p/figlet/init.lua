@@ -59,8 +59,8 @@ return function(spec)
       locked = true
 
       local font = utils.pick(fonts)
+      local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
-
       local stdout = nil
 
       local fin = function()
@@ -102,7 +102,7 @@ return function(spec)
 
       local chan =
         vim.fn.jobstart(
-        {fig_path, "-f", font},
+        {fig_path, "-f", font, "-w", width},
         {
           stderr_buffered = true,
           stdout_buffered = true,

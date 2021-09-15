@@ -58,8 +58,9 @@ return function(spec)
       callback(nil)
     else
       locked = true
-      local cow, style = utils.pick(cows), utils.pick(styles)
 
+      local cow, style = utils.pick(cows), utils.pick(styles)
+      local width = tostring(vim.api.nvim_win_get_width(0))
       local stdout = nil
 
       local fin = function()
@@ -82,7 +83,7 @@ return function(spec)
 
       local chan =
         vim.fn.jobstart(
-        {cow_path, "-f", cow, style},
+        {cow_path, "-f", cow, style, "-W", width},
         {
           stderr_buffered = true,
           stdout_buffered = true,
