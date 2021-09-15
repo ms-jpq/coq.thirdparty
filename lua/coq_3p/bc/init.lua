@@ -69,6 +69,10 @@ return function(spec)
         vim.fn.chansend(chan, feed)
         vim.fn.chanclose(chan, "stdin")
       end
+
+      return function()
+        vim.fn.jobstop(chan)
+      end
     end
   end
 end
