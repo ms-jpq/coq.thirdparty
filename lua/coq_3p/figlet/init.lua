@@ -125,7 +125,8 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        vim.fn.chansend(chan, c_off(before_cursor))
+        local send = vim.trim(c_off(before_cursor))
+        vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
           vim.fn.jobstop(chan)

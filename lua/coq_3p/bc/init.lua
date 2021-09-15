@@ -65,8 +65,8 @@ return function(spec)
         callback(nil)
       else
         local scale = "scale=" .. spec.precision .. ";"
-        local feed = scale .. match .. "\n"
-        vim.fn.chansend(chan, feed)
+        local send = scale .. vim.trim(match) .. "\n"
+        vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
           vim.fn.jobstop(chan)
