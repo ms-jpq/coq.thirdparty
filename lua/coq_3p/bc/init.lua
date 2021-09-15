@@ -32,7 +32,7 @@ return function(spec)
                 label = "= " .. ans,
                 insertText = ans,
                 detail = match .. " = " .. ans,
-                kind = vim.lsp.protocol.CompletionItemKind.Unit
+                kind = vim.lsp.protocol.CompletionItemKind.Value
               }
             }
           }
