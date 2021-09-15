@@ -72,7 +72,7 @@ return function(spec)
               label = "🐮",
               insertText = utils.snippet_escape(big_cow),
               detail = big_cow,
-              kind = vim.lsp.protocol.CompletionItemKind.Unit,
+              kind = vim.lsp.protocol.CompletionItemKind.Value,
               filterText = trigger,
               insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
             }

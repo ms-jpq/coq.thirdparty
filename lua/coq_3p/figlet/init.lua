@@ -93,7 +93,7 @@ return function(spec)
               label = "💭",
               textEdit = text_edit,
               detail = big_fig,
-              kind = vim.lsp.protocol.CompletionItemKind.Unit,
+              kind = vim.lsp.protocol.CompletionItemKind.Text,
               filterText = trigger
             }
           }
