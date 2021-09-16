@@ -34,11 +34,11 @@ return function(spec)
               fin()
             end
           end,
-          on_stderr = function(_, msg)
-            utils.debug_err(unpack(msg))
+          on_stderr = function(_, lines)
+            utils.debug_err(unpack(lines))
           end,
-          on_stdout = function(_, msg)
-            stdout = msg
+          on_stdout = function(_, lines)
+            stdout = lines
           end
         }
       )
@@ -64,6 +64,10 @@ return function(spec)
       local c_on, c_off = utils.comment()
 
       local stdio = {}
+      local on_io = function(_, lines)
+        vim.list_extend(stdio, lines)
+      end
+
       local fin = function()
         local big_cow = (function()
           local acc = vim.tbl_map(c_on, stdio)
@@ -110,12 +114,8 @@ return function(spec)
               callback(nil)
             end
           end,
-          on_stderr = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end,
-          on_stdout = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end
+          on_stderr = on_io,
+          on_stdout = on_io
         }
       )
 

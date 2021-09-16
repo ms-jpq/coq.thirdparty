@@ -1,9 +1,26 @@
 local trigger = " "
 
+local unsafe_list = {
+  "cp",
+  "dd",
+  "mv",
+  "rm",
+  "rsync",
+  "scp",
+  "ssh",
+  "su",
+  "sudo",
+}
+
 return function(spec)
   local shell = spec.shell or {}
+  local max_lines = spec.max_lines or 888
+  local unsafe = spec.unsafe or unsafe_list
+
   vim.validate {
-    shell = {shell, "table"}
+    shell = {shell, "table"},
+    max_lines = {max_lines, "number"},
+    unsafe = {unsafe, "table"}
   }
   for key, val in pairs(shell) do
     vim.validate {
@@ -11,6 +28,19 @@ return function(spec)
       val = {val, "string"}
     }
   end
+
+  local unsafe_set =
+    (function()
+    local acc = {}
+    for key, val in pairs(unsafe) do
+      vim.validate {
+        key = {key, "number"},
+        val = {val, "string"}
+      }
+      acc[val] = true
+    end
+    return acc
+  end)()
 
   local utils = require("coq_3p.utils")
   local sh = vim.env.SHELL or (utils.is_win and "cmd" or "sh")
@@ -25,27 +55,35 @@ return function(spec)
       local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
       local trim_lines = vim.startswith(f_match, "`-!")
 
-      local exec_path, mapped = (function()
-        -- match first word
-        local matched = vim.fn.matchstr(match, [[\v^\S+]])
-        local maybe_exec = shell[matched]
+      -- parse space + cmd
+      local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
+      -- safety check
+      if unsafe_set[cmd] then
+        utils.debug_err("❌ " .. vim.inspect {cmd, match})
+        return "", "", "", false
+      else
+        local exec_path, mapped = (function()
+          -- match first word
+          local matched = vim.fn.matchstr(match, [[\v^\S+]])
 
-        if maybe_exec then
-          local exec_path = vim.fn.exepath(maybe_exec)
-          if #exec_path > 0 then
-            return exec_path, true
+          local maybe_exec = shell[matched]
+          if maybe_exec then
+            local exec_path = vim.fn.exepath(maybe_exec)
+            if #exec_path > 0 then
+              return exec_path, true
+            end
           end
+
+          return vim.fn.exepath(sh), false
+        end)()
+
+        if mapped then
+          -- trim first word + spaces
+          match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
         end
 
-        return vim.fn.exepath(sh), false
-      end)()
-
-      if mapped then
-        -- trim first word + spaces
-        match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
+        return exec_path, f_match, match, trim_lines
       end
-
-      return exec_path, f_match, match, trim_lines
     end
   end
 
@@ -69,10 +107,24 @@ return function(spec)
     else
       locked = true
 
-      local stdio = {}
+      local chan = -1
+      local line_count, stdio = 0, {}
+      local kill = function()
+        vim.fn.jobstop(chan)
+      end
+      local on_io = function(_, lines)
+        if line_count <= max_lines then
+          line_count = line_count + #lines
+          vim.list_extend(stdio, lines)
+        else
+          kill()
+        end
+      end
+
       local fin = function()
+        local output = vim.list_slice(stdio, 1, max_lines)
         local label = (function()
-          for _, line in ipairs(stdio) do
+          for _, line in ipairs(output) do
             if #line > 0 then
               return line
             end
@@ -84,14 +136,14 @@ return function(spec)
           callback(nil)
         else
           local detail = (function()
-            for idx = #stdio, 1, -1 do
-              if #stdio[idx] > 0 then
+            for idx = #output, 1, -1 do
+              if #output[idx] > 0 then
                 break
               else
-                stdio[idx] = nil
+                output[idx] = nil
               end
             end
-            return table.concat(stdio, utils.linesep())
+            return table.concat(output, utils.linesep())
           end)()
 
           local text_edit =
@@ -127,7 +179,7 @@ return function(spec)
         end
       end
 
-      local chan =
+      chan =
         vim.fn.jobstart(
         {exec_path},
         {
@@ -135,12 +187,8 @@ return function(spec)
             locked = false
             fin()
           end,
-          on_stderr = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end,
-          on_stdout = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end
+          on_stderr = on_io,
+          on_stdout = on_io
         }
       )
 
@@ -150,9 +198,7 @@ return function(spec)
       else
         vim.fn.chansend(chan, match)
         vim.fn.chanclose(chan, "stdin")
-        return function()
-          vim.fn.jobstop(chan)
-        end
+        return kill
       end
     end
   end

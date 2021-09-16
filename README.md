@@ -45,6 +45,10 @@ Can use '\`-!' instead of '\`!' to dedent output.
 
 - shell :: Maybe Map 'str, 'str :: For the first word `w` after "\`!", if `w ∈ key of shell`, set `sh = shell[w]`
 
+- max_lines :: int :: max lines to return
+
+- unsafe :: Seq 'str :: do not start repl with these executables, ie. `rm`, `sudo`, `mv`, etc
+
 ### Nvim Lua API
 
 `{ src = "nvimlua", short_name = "nLUA", conf_only = true }`
