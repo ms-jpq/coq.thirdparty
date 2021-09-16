@@ -117,8 +117,9 @@ return function(spec)
       end
 
       local fin = function()
+        local output = vim.list_slice(stdio, 1, max_lines)
         local label = (function()
-          for _, line in ipairs(stdio) do
+          for _, line in ipairs(output) do
             if #line > 0 then
               return line
             end
@@ -130,14 +131,14 @@ return function(spec)
           callback(nil)
         else
           local detail = (function()
-            for idx = #stdio, 1, -1 do
-              if #stdio[idx] > 0 then
+            for idx = #output, 1, -1 do
+              if #output[idx] > 0 then
                 break
               else
-                stdio[idx] = nil
+                output[idx] = nil
               end
             end
-            return table.concat(stdio, utils.linesep())
+            return table.concat(output, utils.linesep())
           end)()
 
           local text_edit =
