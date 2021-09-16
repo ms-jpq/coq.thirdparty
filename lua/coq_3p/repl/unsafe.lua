@@ -1,6 +1,7 @@
 return {
   "cp",
   "dd",
+  "mkfs",
   "mv",
   "rm",
   "rsync",
