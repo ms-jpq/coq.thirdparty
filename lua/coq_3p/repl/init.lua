@@ -1,10 +1,10 @@
 local trigger = " "
 
 local unsafe_list = {
-  "dd",
-  "rm",
-  "mv",
   "cp",
+  "dd",
+  "mv",
+  "rm",
   "rsync",
   "scp",
   "ssh"
@@ -107,12 +107,15 @@ return function(spec)
 
       local chan = -1
       local line_count, stdio = 0, {}
+      local kill = function()
+        vim.fn.jobstop(chan)
+      end
       local on_io = function(_, lines)
         if line_count <= max_lines then
           line_count = line_count + #lines
           vim.list_extend(stdio, lines)
         else
-          vim.fn.jobstop(chan)
+          kill()
         end
       end
 
@@ -193,9 +196,7 @@ return function(spec)
       else
         vim.fn.chansend(chan, match)
         vim.fn.chanclose(chan, "stdin")
-        return function()
-          vim.fn.jobstop(chan)
-        end
+        return kill
       end
     end
   end
