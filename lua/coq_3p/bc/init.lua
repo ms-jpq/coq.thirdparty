@@ -12,6 +12,7 @@ return function(spec)
   return function(args, callback)
     local _, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
+    -- match before =
     local match = vim.trim(vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]]))
 
     if (#bc_path <= 0) or locked or (#match <= 0) then
