@@ -19,10 +19,13 @@ return function(spec)
     if not vim.endswith(line, trigger) then
       return "", "", false
     else
-      local match = vim.fn.matchstr(line, [[\v(\`\!)@<=.+(\`\-?\s*$)@=]])
+      local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+(\`\s*$)@=]])
+      local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+]])
+
       local exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])] or sh
       local exec_path = vim.fn.exepath(exec)
-      local trim_lines = #(vim.fn.matchstr(line, [[\v\-\s*$]])) > 0
+
+      local trim_lines = vim.startswith(f_match, "`-!")
       return exec_path, match, trim_lines
     end
   end
@@ -70,7 +73,7 @@ return function(spec)
           local text_edit =
             (function()
             local t_match =
-              vim.fn.matchstr(before_cursor, [[\v\`\!.+\`\-?\s*$]])
+              vim.fn.matchstr(before_cursor, [[\v\`\-?\!.+\`\s*$]])
             local before_match =
               string.sub(before_cursor, 1, #before_cursor - #t_match)
             local _, lo = vim.str_utfindex(before_match)
