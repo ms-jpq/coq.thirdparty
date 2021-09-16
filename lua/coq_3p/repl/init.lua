@@ -84,7 +84,6 @@ return function(spec)
           callback(nil)
         else
           local detail = (function()
-            local fline = stdio[1] or ""
             for idx = #stdio, 1, -1 do
               if #stdio[idx] > 0 then
                 break
