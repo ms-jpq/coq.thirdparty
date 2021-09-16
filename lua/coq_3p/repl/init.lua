@@ -58,19 +58,22 @@ return function(spec)
               fline = line
             end
             if idx ~= len or #line > 0 then
-              table.insert(lines, lien)
+              table.insert(lines, line)
             end
           end
-          return fline, lines
+          return fline, table.concat(lines, utils.linesep())
         end)()
 
-        if #fline <= 0 then
+        if #label <= 0 then
           callback(nil)
         else
           local text_edit =
             (function()
+            local t_match =
+              vim.fn.matchstr(before_cursor, [[\v\`\!.+\`\-?\s*$]])
             local before_match =
-              string.sub(before_cursor, 1, #before_cursor - #match)
+              string.sub(before_cursor, 1, #before_cursor - #t_match)
+            print(vim.inspect(before_match))
             local _, lo = vim.str_utfindex(before_match)
             local _, hi = vim.str_utfindex(before_cursor)
 
