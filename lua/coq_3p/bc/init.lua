@@ -1,6 +1,7 @@
 return function(spec)
+  local precision = spec.precision or 6
   vim.validate {
-    precision = {spec.precision, "number"}
+    precision = {precision, "number"}
   }
 
   local utils = require("coq_3p.utils")
@@ -49,6 +50,8 @@ return function(spec)
             locked = false
             if code == 0 and stdout then
               fin()
+            else
+              callback(nil)
             end
           end,
           on_stderr = function(_, msg)
@@ -64,7 +67,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local scale = "scale=" .. spec.precision .. ";"
+        local scale = "scale=" .. precision .. ";"
         local send = scale .. vim.trim(match) .. "\n"
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")

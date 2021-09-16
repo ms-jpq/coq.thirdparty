@@ -64,8 +64,7 @@ return function(spec)
       local stdout = nil
 
       local fin = function()
-        local linesep = utils.linesep()
-        local big_cow = table.concat(stdout, linesep)
+        local big_cow = table.concat(stdout, utils.linesep())
         callback {
           isIncomplete = false,
           items = {
@@ -91,6 +90,8 @@ return function(spec)
             locked = false
             if code == 0 and stdout then
               fin()
+            else
+              callback(nil)
             end
           end,
           on_stderr = function(_, msg)

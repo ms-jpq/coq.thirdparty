@@ -1,15 +1,15 @@
-return function(sources)
-  local uid = function(sources)
-    local key = nil
-    while true do
-      if not key or sources[key] then
-        key = math.floor(math.random() * 10000)
-      else
-        return key
-      end
+local uid = function(sources)
+  local key = nil
+  while true do
+    if not key or sources[key] then
+      key = math.floor(math.random() * 10000)
+    else
+      return key
     end
   end
+end
 
+return function(sources)
   COQsources = COQsources or {}
   vim.validate {
     COQsources = {COQsources, "table"},
