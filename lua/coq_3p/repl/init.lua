@@ -71,7 +71,15 @@ return function(spec)
 
       local stdio = {}
       local fin = function()
-        local label = stdio[1] or ""
+        local label = (function()
+          for _, line in ipairs(stdio) do
+            if #line then
+              return line
+            end
+          end
+          return ""
+        end)()
+
         if #label <= 0 then
           callback(nil)
         else
