@@ -73,7 +73,7 @@ return function(spec)
       local fin = function()
         local label = (function()
           for _, line in ipairs(stdio) do
-            if #line then
+            if #line > 0 then
               return line
             end
           end
