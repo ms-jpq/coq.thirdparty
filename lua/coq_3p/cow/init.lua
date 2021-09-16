@@ -87,7 +87,7 @@ return function(spec)
           stderr_buffered = true,
           on_exit = function(_, code)
             locked = false
-            if code == 0 and stdout then
+            if code == 0 then
               fin()
             else
               callback(nil)
