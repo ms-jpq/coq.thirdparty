@@ -61,7 +61,6 @@ return function(spec)
 
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
-      local send = vim.trim(before_cursor)
       local stdout = nil
 
       local fin = function()
@@ -108,6 +107,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
+        local send = vim.trim(before_cursor)
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()

@@ -62,7 +62,6 @@ return function(spec)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
 
-      local send = vim.trim(c_off(before_cursor))
       local stdout = nil
 
       local fin = function()
@@ -128,6 +127,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
+        local send = vim.trim(c_off(before_cursor))
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
