@@ -31,14 +31,6 @@ The rest of object are specific to each individual source.
 
 ## First party
 
-### Nvim Lua API
-
-`{ src = "nvimlua", short_name = "nLUA", conf_only = true }`
-
-![lua.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/nvim_lua.gif)
-
-- conf_only :: Maybe bool :: only return results if current document is relative to `$NVIM_HOME`, default yes
-
 ### REPL
 
 `{ src = "repl", sh = "zsh", shell = { p = perl, n = node ... } }`
@@ -52,6 +44,14 @@ Can use '\`-!' instead of '\`!' to dedent output.
 - sh :: Maybe str :: default repl shell, default to `$SHELL` fallback to `cmd.exe` under NT and `sh` under POSIX
 
 - shell :: Maybe Map 'str, 'str :: For the first word `w` after "\`!", if `w ∈ key of shell`, set `sh = shell[w]`
+
+### Nvim Lua API
+
+`{ src = "nvimlua", short_name = "nLUA", conf_only = true }`
+
+![lua.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/nvim_lua.gif)
+
+- conf_only :: Maybe bool :: only return results if current document is relative to `$NVIM_HOME`, default yes
 
 ### Scientific calculator
 
