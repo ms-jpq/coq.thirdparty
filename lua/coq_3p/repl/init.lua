@@ -59,10 +59,10 @@ return function(spec)
         return bottom
       else
         -- parse `*!...`
-        local f_match = vim.fn.matchstr(line, [[\v\`[\-|\#]?\!.+\`\s*$]])
+        local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]?\!.+\`\s*$]])
         -- parse out `-! and `
         local match =
-          vim.fn.matchstr(f_match, [[\v(\`[\-|\#]?\!)@<=.+(\`\s*$)@=]])
+          vim.fn.matchstr(f_match, [[\v(\`[\-\#]?\!)@<=.+(\`\s*$)@=]])
         local operation = (function()
           if vim.startswith(f_match, "`-!") then
             return "noindent"
