@@ -8,6 +8,8 @@ local unsafe_list = {
   "rsync",
   "scp",
   "ssh"
+  "su",
+  "sudo",
 }
 
 return function(spec)
