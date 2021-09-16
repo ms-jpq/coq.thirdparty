@@ -50,7 +50,7 @@ return function(spec)
       exec_path = "",
       f_match = "",
       match = "",
-      operation = "indent"
+      control_chars = {}
     }
 
     local parsed =
@@ -59,18 +59,18 @@ return function(spec)
         return bottom
       else
         -- parse `*!...`
-        local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]?\!.+\`\s*$]])
-        -- parse out `-! and `
+        local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`\s*$]])
+        -- parse out `*! and `
         local match =
-          vim.fn.matchstr(f_match, [[\v(\`[\-\#]?\!)@<=.+(\`\s*$)@=]])
-        local operation = (function()
-          if vim.startswith(f_match, "`-!") then
-            return "noindent"
-          elseif vim.startswith(f_match, "`#!") then
-            return "comment"
-          else
-            return "indent"
+          vim.fn.matchstr(f_match, [[\v(^\`[^\!]*\!)@<=.+(\`\s*$)@=]])
+
+        local control_chars = (function()
+          local chars = vim.fn.matchstr(f_match, [[\v(^\`)@<=[^\!]*]])
+          local acc = {}
+          for _, char in ipairs(vim.split(chars, "", true)) do
+            acc[char] = true
           end
+          return acc
         end)()
 
         -- parse space + cmd
@@ -104,7 +104,7 @@ return function(spec)
             exec_path = exec_path,
             f_match = f_match,
             match = match,
-            operation = operation
+            control_chars = control_chars
           }
           return parsed
         end
@@ -115,7 +115,7 @@ return function(spec)
       exec_path = {parsed.exec_path, "string"},
       f_match = {parsed.f_match, "string"},
       match = {parsed.match, "string"},
-      operation = {parsed.operation, "string"}
+      control_chars = {parsed.control_chars, "table"}
     }
     return parsed
   end
@@ -127,17 +127,16 @@ return function(spec)
     local parsed = parse(before_cursor)
     local c_on, _ = utils.comment()
 
-    local text_esc, ins_fmt, comment = (function()
+    local text_esc, ins_fmt, comment =
+      (function()
       local fmts = vim.lsp.protocol.InsertTextFormat
-      if parsed.operation == "indent" then
-        return utils.snippet_escape, fmts.Snippet, utils.noop
-      elseif parsed.operation == "comment" then
-        return utils.snippet_escape, fmts.Snippet, c_on
-      elseif parsed.operation == "noindent" then
-        return utils.noop, fmts.PlainText, utils.noop
-      else
-        assert(false, parsed.operation)
-      end
+      local comment = parsed.control_chars["#"] and c_on or utils.noop
+      local text_esc, ins_fmt =
+        unpack(
+        parsed.control_chars["-"] and {utils.noop, fmts.PlainText} or
+          {utils.snippet_escape, fmts.Snippet}
+      )
+      return text_esc, ins_fmt, comment
     end)()
 
     if (#parsed.exec_path <= 0) or locked or (#parsed.match <= 0) then
