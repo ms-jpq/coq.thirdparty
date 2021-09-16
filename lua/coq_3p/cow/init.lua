@@ -62,9 +62,9 @@ return function(spec)
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
 
-      local stdout = {}
+      local stdio = {}
       local fin = function()
-        local big_cow = table.concat(stdout, utils.linesep())
+        local big_cow = table.concat(stdio, utils.linesep())
         callback {
           isIncomplete = false,
           items = {
@@ -94,10 +94,10 @@ return function(spec)
             end
           end,
           on_stderr = function(_, msg)
-            utils.debug_err(unpack(msg))
+            vim.list_extend(stdio, msg)
           end,
           on_stdout = function(_, msg)
-            vim.list_extend(stdout, msg)
+            vim.list_extend(stdio, msg)
           end
         }
       )
