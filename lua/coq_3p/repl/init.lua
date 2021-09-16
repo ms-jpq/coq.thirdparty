@@ -1,6 +1,6 @@
 local trigger = " "
 
-local ban_list = {
+local unsafe_list = {
   "rm",
   "mv",
   "cp",
@@ -12,12 +12,12 @@ local ban_list = {
 return function(spec)
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
-  local banned = spec.banned or ban_list
+  local unsafe = spec.unsafe or unsafe_list
 
   vim.validate {
     shell = {shell, "table"},
     max_lines = {max_lines, "number"},
-    banned = {banned, "table"}
+    unsafe = {unsafe, "table"}
   }
   for key, val in pairs(shell) do
     vim.validate {
@@ -26,10 +26,10 @@ return function(spec)
     }
   end
 
-  local bad_cmds =
+  local unsafe_set =
     (function()
     local acc = {}
-    for key, val in pairs(banned) do
+    for key, val in pairs(unsafe) do
       vim.validate {
         key = {key, "number"},
         val = {val, "string"}
@@ -57,7 +57,7 @@ return function(spec)
         local matched = vim.fn.matchstr(match, [[\v^\S+]])
 
         -- safety check
-        if bad_cmds[matched] then
+        if unsafe_set[matched] then
           utils.debug_err("❌ " .. vim.inspect {matched, match})
           return "", false
         end
