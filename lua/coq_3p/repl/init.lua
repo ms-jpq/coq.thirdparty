@@ -1,6 +1,7 @@
 local trigger = " "
 
 local unsafe_list = {
+  "dd",
   "rm",
   "mv",
   "cp",
@@ -52,15 +53,16 @@ return function(spec)
       local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
       local trim_lines = vim.startswith(f_match, "`-!")
 
+      local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
+      -- safety check
+      if unsafe_set[cmd] then
+        utils.debug_err("❌ " .. vim.inspect {cmd, match})
+        return "", false
+      end
+
       local exec_path, mapped = (function()
         -- match first word
         local matched = vim.fn.matchstr(match, [[\v^\S+]])
-
-        -- safety check
-        if unsafe_set[matched] then
-          utils.debug_err("❌ " .. vim.inspect {matched, match})
-          return "", false
-        end
 
         local maybe_exec = shell[matched]
         if maybe_exec then
