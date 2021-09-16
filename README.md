@@ -41,6 +41,12 @@ Evaluates `...`:
 `<ctrl chars>!...`
 ```
 
+Where `<ctrl chars>` can be a combination of zero or more of:
+
+- `#` :: comment output
+
+- `-` :: prevent indent
+
 ![repl.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/repl.gif)
 
 - sh :: Maybe str :: default repl shell, default to `$SHELL` fallback to `cmd.exe` under NT and `sh` under POSIX
