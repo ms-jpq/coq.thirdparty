@@ -62,10 +62,10 @@ return function(spec)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
 
-      local stdout = {}
+      local stdio = {}
       local fin = function()
         local big_fig = (function()
-          local acc = vim.tbl_map(c_on, stdout)
+          local acc = vim.tbl_map(c_on, stdio)
           return table.concat(acc, utils.linesep())
         end)()
 
@@ -110,10 +110,10 @@ return function(spec)
             end
           end,
           on_stderr = function(_, msg)
-            utils.debug_err(unpack(msg))
+            vim.list_extend(stdio, msg)
           end,
           on_stdout = function(_, msg)
-            vim.list_extend(stdout, msg)
+            vim.list_extend(stdio, msg)
           end
         }
       )
