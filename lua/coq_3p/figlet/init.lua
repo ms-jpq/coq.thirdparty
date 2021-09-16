@@ -110,6 +110,8 @@ return function(spec)
             locked = false
             if code == 0 and stdout then
               fin()
+            else
+              callback(nil)
             end
           end,
           on_stderr = function(_, msg)
