@@ -25,11 +25,20 @@ return function(spec)
       local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
       local trim_lines = vim.startswith(f_match, "`-!")
 
-      -- match first word
-      local exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])] or sh
-      local exec_path = vim.fn.exepath(exec)
+      local exec_path, mapped = (function()
+        -- match first word
+        local maybe_exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])]
+        if maybe_exec then
+          local exec_path = vim.fn.exepath(exec)
+          if #exec_path > 0 then
+            return exec_path, true
+          end
+        end
 
-      if #exec_path > 0 then
+        return vim.fn.exepath(sh), false
+      end)()
+
+      if mapped then
         -- trim first word + spaces
         match = vim.fn.matchstr(match, [[\v(^[^\s]+\s*)@<=.+]])
       end
