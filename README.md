@@ -14,10 +14,10 @@ Install the repo the normal way, and then:
 
 ```lua
 require("coq_3p") {
-  { src = "demo" },
   { src = "nvimlua", short_name = "nLUA" },
   { src = "vimtex", short_name = "vTEX" },
   ...
+  { src = "demo" },
 }
 ```
 
@@ -38,6 +38,8 @@ The rest of object are specific to each individual source.
 Evaluates text between '\`!', '\`' in system shell.
 
 Can use '\`-!' instead of '\`!' to dedent output.
+
+Can use '\`#!' instead of '\`!' to comment output.
 
 ![repl.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/repl.gif)
 
