@@ -23,7 +23,9 @@ return function(spec)
     end
 
     callback {
-      isIncomplete = true, -- isIncomplete = True -> no caching
+      isIncomplete = true,
+      -- isIncomplete = true -> **no caching**
+      -- You probably want caching
       items = items
     }
   end

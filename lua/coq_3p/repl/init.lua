@@ -69,13 +69,12 @@ return function(spec)
     else
       locked = true
 
-      local stdout = nil
-
+      local stdio = {}
       local fin = function()
         local label, detail = (function()
           local fline, lines = "", {}
-          local len = #stdout
-          for idx, line in ipairs(stdout) do
+          local len = #stdio
+          for idx, line in ipairs(stdio) do
             if idx == 1 then
               fline = line
             end
@@ -110,7 +109,7 @@ return function(spec)
             isIncomplete = false,
             items = {
               {
-                label = label,
+                label = "🐚 " .. label,
                 textEdit = text_edit,
                 detail = detail,
                 kind = vim.lsp.protocol.CompletionItemKind.Text,
@@ -126,21 +125,15 @@ return function(spec)
         vim.fn.jobstart(
         {exec_path},
         {
-          stderr_buffered = true,
-          stdout_buffered = true,
           on_exit = function(_, code)
             locked = false
-            if code == 0 and stdout then
-              fin()
-            else
-              callback(nil)
-            end
+            fin()
           end,
           on_stderr = function(_, msg)
-            utils.debug_err(unpack(msg))
+            vim.list_extend(stdio, msg)
           end,
           on_stdout = function(_, msg)
-            stdout = msg
+            vim.list_extend(stdio, msg)
           end
         }
       )

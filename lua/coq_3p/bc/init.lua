@@ -20,8 +20,7 @@ return function(spec)
     else
       locked = true
 
-      local stdout = nil
-
+      local stdout = {}
       local fin = function()
         local ans = table.concat(stdout, "")
         if #ans <= 0 then
@@ -46,10 +45,9 @@ return function(spec)
         {bc_path, "--mathlib"},
         {
           stderr_buffered = true,
-          stdout_buffered = true,
           on_exit = function(_, code)
             locked = false
-            if code == 0 and stdout then
+            if code == 0 then
               fin()
             else
               callback(nil)
@@ -59,7 +57,7 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            stdout = msg
+            vim.list_extend(stdout, msg)
           end
         }
       )
