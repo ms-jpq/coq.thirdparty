@@ -35,11 +35,11 @@ The rest of object are specific to each individual source.
 
 `{ src = "repl", sh = "zsh", shell = { p = perl, n = node ... } }`
 
-Evaluates text between '\`!', '\`' in system shell.
+Evaluates `...`:
 
-Can use '\`-!' instead of '\`!' to dedent output.
-
-Can use '\`#!' instead of '\`!' to comment output.
+```text
+`<ctrl chars>!...`
+```
 
 ![repl.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/repl.gif)
 
