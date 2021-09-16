@@ -13,7 +13,6 @@ return function(spec)
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
   local banned = spec.banned or ban_list
-  local bad_cmds = {}
 
   vim.validate {
     shell = {shell, "table"},
@@ -26,13 +25,19 @@ return function(spec)
       val = {val, "string"}
     }
   end
-  for key, val in pairs(banned) do
-    vim.validate {
-      key = {key, "number"},
-      val = {val, "string"}
-    }
-    bad_cmds[val] = true
-  end
+
+  local bad_cmds =
+    (function()
+    local acc = {}
+    for key, val in pairs(banned) do
+      vim.validate {
+        key = {key, "number"},
+        val = {val, "string"}
+      }
+      acc[val] = true
+    end
+    return acc
+  end)()
 
   local utils = require("coq_3p.utils")
   local sh = vim.env.SHELL or (utils.is_win and "cmd" or "sh")
