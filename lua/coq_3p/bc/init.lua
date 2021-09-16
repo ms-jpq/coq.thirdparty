@@ -56,8 +56,8 @@ return function(spec)
           on_stderr = function(_, msg)
             utils.debug_err(unpack(msg))
           end,
-          on_stdout = function(_, msg)
-            vim.list_extend(stdout, msg)
+          on_stdout = function(_, lines)
+            vim.list_extend(stdout, lines)
           end
         }
       )

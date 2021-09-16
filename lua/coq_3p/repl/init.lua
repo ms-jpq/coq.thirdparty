@@ -70,6 +70,10 @@ return function(spec)
       locked = true
 
       local stdio = {}
+      local on_io = function(_, lines)
+        vim.list_extend(stdio, lines)
+      end
+
       local fin = function()
         local label = (function()
           for _, line in ipairs(stdio) do
@@ -135,12 +139,8 @@ return function(spec)
             locked = false
             fin()
           end,
-          on_stderr = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end,
-          on_stdout = function(_, msg)
-            vim.list_extend(stdio, msg)
-          end
+          on_stderr = on_io,
+          on_stdout = on_io
         }
       )
 
