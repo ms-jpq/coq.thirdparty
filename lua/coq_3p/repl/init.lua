@@ -53,6 +53,7 @@ return function(spec)
 
         -- safety check
         if bad_cmds[matched] then
+          utils.debug_err("❌ " .. vim.inspect {matched, match})
           return "", false
         end
 
