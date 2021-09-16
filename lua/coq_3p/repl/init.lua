@@ -7,7 +7,7 @@ local unsafe_list = {
   "rm",
   "rsync",
   "scp",
-  "ssh"
+  "ssh",
   "su",
   "sudo",
 }
