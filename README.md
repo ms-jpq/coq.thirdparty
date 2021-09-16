@@ -47,7 +47,7 @@ Can use '\`-!' instead of '\`!' to dedent output.
 
 - max_lines :: int :: max lines to return
 
-- unsafe :: Seq 'str :: do not start repl with these executables, ie. `rm`, `sudo`, `ssh`, etc
+- unsafe :: Seq 'str :: do not start repl with these executables, ie. `rm`, `sudo`, `mv`, etc
 
 ### Nvim Lua API
 
