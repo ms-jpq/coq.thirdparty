@@ -17,16 +17,33 @@ return function(spec)
 
   local parse = function(line)
     if not vim.endswith(line, trigger) then
-      return "", "", false
+      return "", "", "", false
     else
-      local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+(\`\s*$)@=]])
-      local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+]])
-
-      local exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])] or sh
-      local exec_path = vim.fn.exepath(exec)
-
+      -- parse `-!...`
+      local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+\`\s*$]])
+      -- parse out `-! and `
+      local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
       local trim_lines = vim.startswith(f_match, "`-!")
-      return exec_path, match, trim_lines
+
+      local exec_path, mapped = (function()
+        -- match first word
+        local maybe_exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])]
+        if maybe_exec then
+          local exec_path = vim.fn.exepath(exec)
+          if #exec_path > 0 then
+            return exec_path, true
+          end
+        end
+
+        return vim.fn.exepath(sh), false
+      end)()
+
+      if mapped then
+        -- trim first word + spaces
+        match = vim.fn.matchstr(match, [[\v(^[^\s]+\s*)@<=.+]])
+      end
+
+      return exec_path, f_match, match, trim_lines
     end
   end
 
@@ -34,7 +51,7 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
-    local exec_path, match, trim_lines = parse(before_cursor)
+    local exec_path, f_match, match, trim_lines = parse(before_cursor)
 
     local text_esc, ins_fmt = (function()
       local fmts = vim.lsp.protocol.InsertTextFormat
@@ -72,10 +89,8 @@ return function(spec)
         else
           local text_edit =
             (function()
-            local t_match =
-              vim.fn.matchstr(before_cursor, [[\v\`\-?\!.+\`\s*$]])
             local before_match =
-              string.sub(before_cursor, 1, #before_cursor - #t_match)
+              string.sub(before_cursor, 1, #before_cursor - #f_match)
             local _, lo = vim.str_utfindex(before_match)
             local _, hi = vim.str_utfindex(before_cursor)
 
