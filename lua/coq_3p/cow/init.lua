@@ -51,7 +51,7 @@ return function(spec)
 
   local locked = false
   return function(args, callback)
-    local _, col = unpack(args.pos)
+    local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
 
     if (#cows <= 0) or locked or not vim.endswith(before_cursor, trigger) then
@@ -61,20 +61,37 @@ return function(spec)
 
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
+      local c_on, c_off = utils.comment()
 
       local stdio = {}
       local fin = function()
-        local big_cow = table.concat(stdio, utils.linesep())
+        local big_cow = (function()
+          local acc = vim.tbl_map(c_on, stdio)
+          return table.concat(acc, utils.linesep())
+        end)()
+
+        local text_edit =
+          (function()
+          local _, u16 = vim.str_utfindex(args.line)
+          local edit = {
+            newText = big_cow,
+            range = {
+              start = {line = row, character = 0},
+              ["end"] = {line = row, character = u16}
+            }
+          }
+          return edit
+        end)()
+
         callback {
           isIncomplete = false,
           items = {
             {
               label = "🐮",
-              insertText = utils.snippet_escape(big_cow),
+              textEdit = text_edit,
               detail = big_cow,
               kind = vim.lsp.protocol.CompletionItemKind.Unit,
-              filterText = trigger,
-              insertTextFormat = vim.lsp.protocol.InsertTextFormat.Snippet
+              filterText = trigger
             }
           }
         }
@@ -106,7 +123,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local send = vim.trim(before_cursor)
+        local send = vim.trim(c_off(before_cursor))
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
