@@ -27,9 +27,11 @@ return function(spec)
 
       local exec_path, mapped = (function()
         -- match first word
-        local maybe_exec = shell[vim.fn.matchstr(match, [[\v^[^\s]+]])]
+        local matched = vim.fn.matchstr(match, [[\v^\S+]])
+        local maybe_exec = shell[matched]
+
         if maybe_exec then
-          local exec_path = vim.fn.exepath(exec)
+          local exec_path = vim.fn.exepath(maybe_exec)
           if #exec_path > 0 then
             return exec_path, true
           end
@@ -40,7 +42,7 @@ return function(spec)
 
       if mapped then
         -- trim first word + spaces
-        match = vim.fn.matchstr(match, [[\v(^[^\s]+\s*)@<=.+]])
+        match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
       end
 
       return exec_path, f_match, match, trim_lines
