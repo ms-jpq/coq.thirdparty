@@ -13,7 +13,7 @@ return function(spec)
   end
 
   local utils = require("coq_3p.utils")
-  local sh = vim.env.SHELL or (utils.is_win and "cmd") or ""
+  local sh = vim.env.SHELL or (utils.is_win and "cmd" or "sh")
 
   local parse = function(line)
     if not vim.endswith(line, trigger) then
