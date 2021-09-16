@@ -70,7 +70,7 @@ return function(spec)
           isIncomplete = false,
           items = {
             {
-              label = "< " .. send .. " >",
+              label = "🐮",
               insertText = utils.snippet_escape(big_cow),
               detail = big_cow,
               kind = vim.lsp.protocol.CompletionItemKind.Unit,

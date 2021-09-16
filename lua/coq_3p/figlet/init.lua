@@ -91,7 +91,7 @@ return function(spec)
           isIncomplete = false,
           items = {
             {
-              label = "> " .. send .. " <",
+              label = "🏁",
               textEdit = text_edit,
               detail = big_fig,
               kind = vim.lsp.protocol.CompletionItemKind.Text,
