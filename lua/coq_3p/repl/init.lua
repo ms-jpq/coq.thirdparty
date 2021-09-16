@@ -53,34 +53,35 @@ return function(spec)
       local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
       local trim_lines = vim.startswith(f_match, "`-!")
 
+      -- parse space + cmd
       local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
       -- safety check
       if unsafe_set[cmd] then
         utils.debug_err("❌ " .. vim.inspect {cmd, match})
-        return "", false
-      end
+        return "", "", "", false
+      else
+        local exec_path, mapped = (function()
+          -- match first word
+          local matched = vim.fn.matchstr(match, [[\v^\S+]])
 
-      local exec_path, mapped = (function()
-        -- match first word
-        local matched = vim.fn.matchstr(match, [[\v^\S+]])
-
-        local maybe_exec = shell[matched]
-        if maybe_exec then
-          local exec_path = vim.fn.exepath(maybe_exec)
-          if #exec_path > 0 then
-            return exec_path, true
+          local maybe_exec = shell[matched]
+          if maybe_exec then
+            local exec_path = vim.fn.exepath(maybe_exec)
+            if #exec_path > 0 then
+              return exec_path, true
+            end
           end
+
+          return vim.fn.exepath(sh), false
+        end)()
+
+        if mapped then
+          -- trim first word + spaces
+          match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
         end
 
-        return vim.fn.exepath(sh), false
-      end)()
-
-      if mapped then
-        -- trim first word + spaces
-        match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
+        return exec_path, f_match, match, trim_lines
       end
-
-      return exec_path, f_match, match, trim_lines
     end
   end
 
