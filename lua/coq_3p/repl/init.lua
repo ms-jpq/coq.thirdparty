@@ -71,21 +71,22 @@ return function(spec)
 
       local stdio = {}
       local fin = function()
-        local label, detail = (function()
-          local fline = stdio[1] or ""
-          for idx = #stdio, 1, -1 do
-            if #stdio[idx] > 0 then
-              break
-            else
-              stdio[idx] = nil
-            end
-          end
-          return fline, table.concat(stdio, utils.linesep())
-        end)()
-
+        local label = stdio[1] or ""
         if #label <= 0 then
           callback(nil)
         else
+          local detail = (function()
+            local fline = stdio[1] or ""
+            for idx = #stdio, 1, -1 do
+              if #stdio[idx] > 0 then
+                break
+              else
+                stdio[idx] = nil
+              end
+            end
+            return table.concat(stdio, utils.linesep())
+          end)()
+
           local text_edit =
             (function()
             local before_match =
