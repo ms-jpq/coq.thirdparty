@@ -61,8 +61,8 @@ return function(spec)
 
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
-      local stdout = nil
 
+      local stdout = {}
       local fin = function()
         local big_cow = table.concat(stdout, utils.linesep())
         callback {
@@ -85,7 +85,6 @@ return function(spec)
         {cow_path, "-f", cow, style, "-W", width},
         {
           stderr_buffered = true,
-          stdout_buffered = true,
           on_exit = function(_, code)
             locked = false
             if code == 0 and stdout then
@@ -98,7 +97,7 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            stdout = msg
+            vim.list_extend(stdout, msg)
           end
         }
       )

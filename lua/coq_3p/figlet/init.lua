@@ -62,14 +62,10 @@ return function(spec)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
 
-      local stdout = nil
-
+      local stdout = {}
       local fin = function()
         local big_fig = (function()
-          local acc = {}
-          for _, line in ipairs(stdout) do
-            table.insert(acc, c_on(line))
-          end
+          local acc = vim.tbl_map(c_on, stdout)
           return table.concat(acc, utils.linesep())
         end)()
 
@@ -105,10 +101,9 @@ return function(spec)
         {fig_path, "-f", font, "-w", width},
         {
           stderr_buffered = true,
-          stdout_buffered = true,
           on_exit = function(_, code)
             locked = false
-            if code == 0 and stdout then
+            if code == 0 then
               fin()
             else
               callback(nil)
@@ -118,7 +113,7 @@ return function(spec)
             utils.debug_err(unpack(msg))
           end,
           on_stdout = function(_, msg)
-            stdout = msg
+            vim.list_extend(stdout, msg)
           end
         }
       )
