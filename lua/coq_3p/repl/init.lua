@@ -109,7 +109,7 @@ return function(spec)
             isIncomplete = false,
             items = {
               {
-                label = label,
+                label = "🐚 " .. label,
                 textEdit = text_edit,
                 detail = detail,
                 kind = vim.lsp.protocol.CompletionItemKind.Text,
