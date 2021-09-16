@@ -1,17 +1,37 @@
 local trigger = " "
 
+local ban_list = {
+  "rm",
+  "mv",
+  "cp",
+  "rsync",
+  "scp",
+  "ssh"
+}
+
 return function(spec)
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
+  local banned = spec.banned or ban_list
+  local bad_cmds = {}
+
   vim.validate {
     shell = {shell, "table"},
-    max_lines = {max_lines, "number"}
+    max_lines = {max_lines, "number"},
+    banned = {banned, "table"}
   }
   for key, val in pairs(shell) do
     vim.validate {
       key = {key, "string"},
       val = {val, "string"}
     }
+  end
+  for key, val in pairs(banned) do
+    vim.validate {
+      key = {key, "number"},
+      val = {val, "string"}
+    }
+    bad_cmds[val] = true
   end
 
   local utils = require("coq_3p.utils")
@@ -30,8 +50,13 @@ return function(spec)
       local exec_path, mapped = (function()
         -- match first word
         local matched = vim.fn.matchstr(match, [[\v^\S+]])
-        local maybe_exec = shell[matched]
 
+        -- safety check
+        if bad_cmds[matched] then
+          return "", false
+        end
+
+        local maybe_exec = shell[matched]
         if maybe_exec then
           local exec_path = vim.fn.exepath(maybe_exec)
           if #exec_path > 0 then
