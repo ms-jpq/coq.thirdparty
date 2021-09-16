@@ -73,7 +73,6 @@ return function(spec)
               vim.fn.matchstr(before_cursor, [[\v\`\!.+\`\-?\s*$]])
             local before_match =
               string.sub(before_cursor, 1, #before_cursor - #t_match)
-            print(vim.inspect(before_match))
             local _, lo = vim.str_utfindex(before_match)
             local _, hi = vim.str_utfindex(before_cursor)
 
