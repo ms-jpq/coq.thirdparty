@@ -72,17 +72,15 @@ return function(spec)
       local stdio = {}
       local fin = function()
         local label, detail = (function()
-          local fline, lines = "", {}
-          local len = #stdio
-          for idx, line in ipairs(stdio) do
-            if idx == 1 then
-              fline = line
-            end
-            if idx ~= len or #line > 0 then
-              table.insert(lines, line)
+          local fline = stdio[1] or ""
+          for idx = #stdio, 1, -1 do
+            if #stdio[idx] > 0 then
+              break
+            else
+              stdio[idx] = nil
             end
           end
-          return fline, table.concat(lines, utils.linesep())
+          return fline, table.concat(stdio, utils.linesep())
         end)()
 
         if #label <= 0 then
