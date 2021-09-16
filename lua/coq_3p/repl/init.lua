@@ -2,8 +2,10 @@ local trigger = " "
 
 return function(spec)
   local shell = spec.shell or {}
+  local max_lines = spec.max_lines or 888
   vim.validate {
-    shell = {shell, "table"}
+    shell = {shell, "table"},
+    max_lines = {max_lines, "number"}
   }
   for key, val in pairs(shell) do
     vim.validate {
@@ -69,9 +71,15 @@ return function(spec)
     else
       locked = true
 
-      local stdio = {}
+      local chan = -1
+      local line_count, stdio = 0, {}
       local on_io = function(_, lines)
-        vim.list_extend(stdio, lines)
+        if line_count <= max_lines then
+          line_count = line_count + #lines
+          vim.list_extend(stdio, lines)
+        else
+          vim.fn.jobstop(chan)
+        end
       end
 
       local fin = function()
@@ -131,7 +139,7 @@ return function(spec)
         end
       end
 
-      local chan =
+      chan =
         vim.fn.jobstart(
         {exec_path},
         {
