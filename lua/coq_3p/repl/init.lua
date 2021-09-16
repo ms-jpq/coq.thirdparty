@@ -58,8 +58,8 @@ return function(spec)
       if not vim.endswith(line, trigger) then
         return bottom
       else
-        -- parse `-!...`
-        local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+\`\s*$]])
+        -- parse `*!...`
+        local f_match = vim.fn.matchstr(line, [[\v\`[\-|\#]?\!.+\`\s*$]])
         -- parse out `-! and `
         local match =
           vim.fn.matchstr(f_match, [[\v(\`[\-|\#]?\!)@<=.+(\`\s*$)@=]])
