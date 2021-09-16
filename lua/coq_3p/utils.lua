@@ -6,9 +6,15 @@
 
 -- !!WARN !!
 
+local DEBUG = vim.env.COQ_DEBUG
+
 local M = {}
 
-local DEBUG = vim.env.COQ_DEBUG
+M.is_win = vim.fn.has("win32") == 1
+
+M.noop = function(...)
+  return ...
+end
 
 M.debug_err = function(...)
   if DEBUG then

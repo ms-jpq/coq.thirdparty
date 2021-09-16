@@ -61,16 +61,16 @@ return function(spec)
 
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
+      local send = vim.trim(before_cursor)
       local stdout = nil
 
       local fin = function()
-        local linesep = utils.linesep()
-        local big_cow = table.concat(stdout, linesep)
+        local big_cow = table.concat(stdout, utils.linesep())
         callback {
           isIncomplete = false,
           items = {
             {
-              label = "🐮",
+              label = "<" .. send .. ">",
               insertText = utils.snippet_escape(big_cow),
               detail = big_cow,
               kind = vim.lsp.protocol.CompletionItemKind.Unit,
@@ -108,7 +108,6 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local send = vim.trim(before_cursor)
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()

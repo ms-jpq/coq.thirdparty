@@ -61,16 +61,17 @@ return function(spec)
       local font = utils.pick(fonts)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
+
+      local send = vim.trim(c_off(before_cursor))
       local stdout = nil
 
       local fin = function()
         local big_fig = (function()
-          local linesep = utils.linesep()
           local acc = {}
           for _, line in ipairs(stdout) do
             table.insert(acc, c_on(line))
           end
-          return table.concat(acc, linesep)
+          return table.concat(acc, utils.linesep())
         end)()
 
         local text_edit =
@@ -90,7 +91,7 @@ return function(spec)
           isIncomplete = false,
           items = {
             {
-              label = "💭",
+              label = "[" .. send .. "]",
               textEdit = text_edit,
               detail = big_fig,
               kind = vim.lsp.protocol.CompletionItemKind.Text,
@@ -127,7 +128,6 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local send = vim.trim(c_off(before_cursor))
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()

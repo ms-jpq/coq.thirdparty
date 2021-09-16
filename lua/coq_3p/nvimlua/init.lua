@@ -1,10 +1,10 @@
 return function(spec)
-  local is_win = vim.fn.has("win32") == 1
-  local utils = require("coq_3p.utils")
-
+  local conf_only = spec.conf_only ~= nil and spec.conf_only or true
   vim.validate {
-    conf_only = {spec.conf_only, "boolean"}
+    conf_only = {conf_only, "boolean"}
   }
+
+  local utils = require("coq_3p.utils")
 
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
 
@@ -50,7 +50,7 @@ return function(spec)
   end
 
   local p_norm = function(path)
-    return is_win and string.lower(path) or path
+    return utils.is_win and string.lower(path) or path
   end
 
   local conf_dir = p_norm(vim.fn.stdpath("config"))
@@ -68,7 +68,7 @@ return function(spec)
       return false
     end
 
-    if spec.conf_only then
+    if conf_only then
       local bufname = p_norm(vim.api.nvim_buf_get_name(0))
       return vim.startswith(bufname, conf_dir)
     end
