@@ -85,6 +85,7 @@ return function(spec)
             }
             return edit
           end)()
+
           callback {
             isIncomplete = false,
             items = {
