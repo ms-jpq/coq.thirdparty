@@ -31,11 +31,19 @@ The rest of object are specific to each individual source.
 
 ## First party
 
-### [Demo](https://github.com/ms-jpq/coq.thirdparty/blob/main/lua/coq_3p/demo/init.lua)
+### REPL
 
-`{ src = "demo" }`
+`{ src = "repl", sh = "zsh", shell = { p = perl, n = node ... } }`
 
-This is a reference implementation, do not enable it unless you want to write your own plugin, and want to see how it works.
+Evaluates text between '\`!', '\`' in system shell.
+
+Can use '\`-!' instead of '\`!' to dedent output.
+
+![repl.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/repl.gif)
+
+- sh :: Maybe str :: default repl shell, default to `$SHELL` fallback to `cmd.exe` under NT and `sh` under POSIX
+
+- shell :: Maybe Map 'str, 'str :: For the first word `w` after "\`!", if `w ∈ key of shell`, set `sh = shell[w]`
 
 ### Nvim Lua API
 
@@ -43,13 +51,15 @@ This is a reference implementation, do not enable it unless you want to write yo
 
 ![lua.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/nvim_lua.gif)
 
-- conf_only :: only return results if current document is relative to `$NVIM_HOME`
+- conf_only :: Maybe bool :: only return results if current document is relative to `$NVIM_HOME`, default yes
 
 ### Scientific calculator
 
 `{ src = "bc", short_name = "MATH", precision = 6 }`
 
 ![bc.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/bc.gif)
+
+- precision :: Maybe int
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
