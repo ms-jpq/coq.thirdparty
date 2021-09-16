@@ -9,7 +9,7 @@ local unsafe_list = {
   "scp",
   "ssh",
   "su",
-  "sudo",
+  "sudo"
 }
 
 return function(spec)
@@ -46,63 +46,101 @@ return function(spec)
   local sh = vim.env.SHELL or (utils.is_win and "cmd" or "sh")
 
   local parse = function(line)
-    if not vim.endswith(line, trigger) then
-      return "", "", "", false
-    else
-      -- parse `-!...`
-      local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+\`\s*$]])
-      -- parse out `-! and `
-      local match = vim.fn.matchstr(f_match, [[\v(\`\-?\!)@<=.+(\`\s*$)@=]])
-      local trim_lines = vim.startswith(f_match, "`-!")
+    local bottom = {
+      exec_path = "",
+      f_match = "",
+      match = "",
+      operation = "indent"
+    }
 
-      -- parse space + cmd
-      local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
-      -- safety check
-      if unsafe_set[cmd] then
-        utils.debug_err("❌ " .. vim.inspect {cmd, match})
-        return "", "", "", false
+    local parsed =
+      (function()
+      if not vim.endswith(line, trigger) then
+        return bottom
       else
-        local exec_path, mapped = (function()
-          -- match first word
-          local matched = vim.fn.matchstr(match, [[\v^\S+]])
-
-          local maybe_exec = shell[matched]
-          if maybe_exec then
-            local exec_path = vim.fn.exepath(maybe_exec)
-            if #exec_path > 0 then
-              return exec_path, true
-            end
+        -- parse `-!...`
+        local f_match = vim.fn.matchstr(line, [[\v\`\-?\!.+\`\s*$]])
+        -- parse out `-! and `
+        local match =
+          vim.fn.matchstr(f_match, [[\v(\`[\-|\#]?\!)@<=.+(\`\s*$)@=]])
+        local operation = (function()
+          if vim.startswith(f_match, "`-!") then
+            return "noindent"
+          elseif vim.startswith(f_match, "`#!") then
+            return "comment"
+          else
+            return "indent"
           end
-
-          return vim.fn.exepath(sh), false
         end)()
 
-        if mapped then
-          -- trim first word + spaces
-          match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
-        end
+        -- parse space + cmd
+        local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
+        -- safety check
+        if unsafe_set[cmd] then
+          utils.debug_err("❌ " .. vim.inspect {cmd, match})
+          return bottom
+        else
+          local exec_path, mapped = (function()
+            -- match first word
+            local matched = vim.fn.matchstr(match, [[\v^\S+]])
 
-        return exec_path, f_match, match, trim_lines
+            local maybe_exec = shell[matched]
+            if maybe_exec then
+              local exec_path = vim.fn.exepath(maybe_exec)
+              if #exec_path > 0 then
+                return exec_path, true
+              end
+            end
+
+            return vim.fn.exepath(sh), false
+          end)()
+
+          if mapped then
+            -- trim first word + spaces
+            match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
+          end
+
+          local parsed = {
+            exec_path = exec_path,
+            f_match = f_match,
+            match = match,
+            operation = operation
+          }
+          return parsed
+        end
       end
-    end
+    end)()
+
+    vim.validate {
+      exec_path = {parsed.exec_path, "string"},
+      f_match = {parsed.f_match, "string"},
+      match = {parsed.match, "string"},
+      operation = {parsed.operation, "string"}
+    }
+    return parsed
   end
 
   local locked = false
   return function(args, callback)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
-    local exec_path, f_match, match, trim_lines = parse(before_cursor)
+    local parsed = parse(before_cursor)
+    local c_on, _ = utils.comment()
 
-    local text_esc, ins_fmt = (function()
+    local text_esc, ins_fmt, comment = (function()
       local fmts = vim.lsp.protocol.InsertTextFormat
-      if trim_lines then
-        return utils.noop, fmts.PlainText
+      if parsed.operation == "indent" then
+        return utils.snippet_escape, fmts.Snippet, utils.noop
+      elseif parsed.operation == "comment" then
+        return utils.snippet_escape, fmts.Snippet, c_on
+      elseif parsed.operation == "noindent" then
+        return utils.noop, fmts.PlainText, utils.noop
       else
-        return utils.snippet_escape, fmts.Snippet
+        assert(false, parsed.operation)
       end
     end)()
 
-    if (#exec_path <= 0) or locked or (#match <= 0) then
+    if (#parsed.exec_path <= 0) or locked or (#parsed.match <= 0) then
       callback(nil)
     else
       locked = true
@@ -143,13 +181,13 @@ return function(spec)
                 output[idx] = nil
               end
             end
-            return table.concat(output, utils.linesep())
+            return table.concat(vim.tbl_map(comment, output), utils.linesep())
           end)()
 
           local text_edit =
             (function()
             local before_match =
-              string.sub(before_cursor, 1, #before_cursor - #f_match)
+              string.sub(before_cursor, 1, #before_cursor - #parsed.f_match)
             local _, lo = vim.str_utfindex(before_match)
             local _, hi = vim.str_utfindex(before_cursor)
 
@@ -181,7 +219,7 @@ return function(spec)
 
       chan =
         vim.fn.jobstart(
-        {exec_path},
+        {parsed.exec_path},
         {
           on_exit = function(_, code)
             locked = false
@@ -196,7 +234,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        vim.fn.chansend(chan, match)
+        vim.fn.chansend(chan, parsed.match)
         vim.fn.chanclose(chan, "stdin")
         return kill
       end
