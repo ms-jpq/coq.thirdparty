@@ -43,9 +43,12 @@ M.register_source =
               virtcol = vim.fn.virtcol(".")
             }
           ),
-          completion_context = {
-            triggerKind = vim.lsp.protocol.CompletionTriggerKind.Invoked
-          }
+          completion_context = utils.freeze(
+            "context.completion_context",
+            {
+              triggerKind = vim.lsp.protocol.CompletionTriggerKind.Invoked
+            }
+          )
         }
         return args_cache
       end
