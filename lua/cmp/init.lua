@@ -59,19 +59,6 @@ M.register_source =
     end
   end)()
 
-  local should_cont = function(triggers, before_cursor)
-    vim.validate {
-      triggers = {triggers, "table"},
-      before_cursor = {before_cursor, "string"}
-    }
-    for _, char in ipairs(triggers) do
-      if vim.endswith(before_cursor, char) then
-        return true
-      end
-    end
-    return false
-  end
-
   return function(name, cmp_source)
     local go, err =
       pcall(
@@ -81,8 +68,6 @@ M.register_source =
           COQsources = {COQsources, "table"},
           cmp_source = {cmp_source, "table"}
         }
-        local triggers =
-          (cmp_source.get_trigger_characters or utils.constantly {})(cmp_source)
 
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
@@ -91,12 +76,11 @@ M.register_source =
             if
               not (cmp_source.is_available or utils.constantly(true))(
                 cmp_source
-              ) or
-                not should_cont(triggers, cmp_args.context.cursor_before_line)
+              )
              then
               callback(nil)
             else
-              local _ = (cmp_source.complete or function(_, args, callback)
+              (cmp_source.complete or function(_, args, callback)
                   callback(args)
                 end)(cmp_source, cmp_args, callback)
             end
