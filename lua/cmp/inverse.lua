@@ -20,6 +20,7 @@ return function()
     end
     function src.complete(_, cmp_args, callback)
       local args = {
+        uid = cmp_args.time,
         pos = {cmp_args.context.cursor.line,cmp_args.context.cursor.col},
         line = cmp_args.context.cursor_line
       }
