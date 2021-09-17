@@ -47,6 +47,8 @@ Where `<ctrl chars>` can be a combination of zero or more of:
 
 - `-` :: prevent indent
 
+Note: `coq.nvim` has _very short_ deadlines by default for auto completions, manual `<c-space>` might be required if `$SHELL` is slow.
+
 ![repl.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/repl.gif)
 
 - sh :: Maybe str :: default repl shell, default to `$SHELL` fallback to `cmd.exe` under NT and `sh` under POSIX
@@ -54,6 +56,8 @@ Where `<ctrl chars>` can be a combination of zero or more of:
 - shell :: Maybe Map 'str, 'str :: For the first word `w` after "\`!", if `w ∈ key of shell`, set `sh = shell[w]`
 
 - max_lines :: int :: max lines to return
+
+- deadline :: int :: maxms to wait for execution
 
 - unsafe :: Seq 'str :: do not start repl with these executables, ie. `rm`, `sudo`, `mv`, etc
 
