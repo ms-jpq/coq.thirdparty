@@ -6,25 +6,25 @@ return function()
 
   local trans = function(key, val)
     local src = {}
-    function src:is_available()
+    function src.is_available()
       return true
     end
-    function src:get_debug_name()
+    function src.get_debug_name()
       return "-- BRIDGED coq.nvim --\t" .. tostring(key)
     end
-    function src:get_keyword_pattern()
-      return ""
+    function src.get_keyword_pattern()
+      return ".*"
     end
-    function src:get_trigger_characters()
+    function src.get_trigger_characters()
       return {}
     end
-    function src:complete(args, callback)
+    function src.complete(_, args, callback)
       val(args, callback)
     end
-    function src:resolve(item, callback)
+    function src.resolve(_, item, callback)
       callback(item)
     end
-    function src:execute(item, callback)
+    function src.execute(_, item, callback)
       callback(item)
     end
     return src
