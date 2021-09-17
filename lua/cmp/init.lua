@@ -65,6 +65,7 @@ M.register_source =
   end
 
   return function(name, cmp_source)
+    print(vim.inspect{ name, cmp_source })
     local go, err =
       pcall(
       function()
