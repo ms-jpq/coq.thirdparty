@@ -80,7 +80,7 @@ M.register_source =
              then
               callback(nil)
             else
-              local _ = (cmp_source.complete or function(_, args, callback)
+              (cmp_source.complete or function(_, args, callback)
                   callback(args)
                 end)(cmp_source, cmp_args, callback)
             end
