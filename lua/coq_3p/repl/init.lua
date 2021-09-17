@@ -3,8 +3,8 @@ local trigger = " "
 return function(spec)
   local sh = spec.sh or vim.env.SHELL or (utils.is_win and "cmd" or "sh")
   local shell = spec.shell or {}
-  local max_lines = spec.max_lines or 8888
-  local deadline = spec.deadline or 1000
+  local max_lines = spec.max_lines or 888
+  local deadline = spec.deadline or 888
   local unsafe = spec.unsafe or require("coq_3p.repl.unsafe")
 
   vim.validate {
