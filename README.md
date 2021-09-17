@@ -33,7 +33,16 @@ The rest of object are specific to each individual source.
 
 ### REPL
 
-`{ src = "repl", sh = "zsh", shell = { p = perl, n = node ... } }`
+```lua
+{
+  src = "repl",
+  sh = "zsh",
+  shell = { p = perl, n = node ... },
+  max_lines = 99,
+  deadline = 500,
+  unsafe = { "rm", "poweroff", "mv", ... }
+}
+```
 
 Evaluates `...`:
 
