@@ -25,32 +25,31 @@ M.register_source =
     end
   end)()
 
+  local should_cont = function(triggers, before_cursor)
+    for _, char in ipairs(triggers) do
+      if vim.endswith(before_cursor, char) then
+        return true
+      end
+    end
+    return false
+  end
+
   return function(name, cmp_source)
     local go, err =
       pcall(
       function()
         COQsources = COQsources or {}
         vim.validate {
-          COQsources = {COQsources, "table"}
+          COQsources = {COQsources, "table"},
+          cmp_source = {cmp_source, "table"}
         }
-
-        vim.validate {cmp_source = {cmp_source, "table"}}
         local triggers = cmp_source:get_trigger_characters()
         for idx, char in ipairs(triggers) do
           vim.validate {idx = {idx, "number"}, char = {char, "string"}}
         end
 
-        local go = function(before_cursor)
-          for _, char in ipairs(triggers) do
-            if vim.endswith(before_cursor, char) then
-              return true
-            end
-          end
-          return false
-        end
-
         COQsources[utils.new_uid(COQsources)] = function(args, callback)
-          if go(lhs) then
+          if should_cont(triggers, lhs) then
             callback(nil)
           else
             local cmp_args = trans(args)
