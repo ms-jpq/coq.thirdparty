@@ -10,7 +10,6 @@ return {
   "rsync",
   "scp",
   "shutdown",
-  "ssh",
   "su",
   "sudo"
 }
