@@ -26,38 +26,39 @@ M.register_source =
   end)()
 
   return function(name, cmp_source)
-    local cont = function()
-      COQsources = COQsources or {}
-      vim.validate {
-        COQsources = {COQsources, "table"}
-      }
+    local go, err =
+      pcall(
+      function()
+        COQsources = COQsources or {}
+        vim.validate {
+          COQsources = {COQsources, "table"}
+        }
 
-      vim.validate {cmp_source = {cmp_source, "table"}}
-      local triggers = cmp_source:get_trigger_characters()
-      for idx, char in ipairs(triggers) do
-        vim.validate {idx = {idx, "number"}, char = {char, "string"}}
-      end
+        vim.validate {cmp_source = {cmp_source, "table"}}
+        local triggers = cmp_source:get_trigger_characters()
+        for idx, char in ipairs(triggers) do
+          vim.validate {idx = {idx, "number"}, char = {char, "string"}}
+        end
 
-      local go = function(before_cursor)
-        for _, char in ipairs(triggers) do
-          if vim.endswith(before_cursor, char) then
-            return true
+        local go = function(before_cursor)
+          for _, char in ipairs(triggers) do
+            if vim.endswith(before_cursor, char) then
+              return true
+            end
+          end
+          return false
+        end
+
+        COQsources[utils.new_uid(COQsources)] = function(args, callback)
+          if go(lhs) then
+            callback(nil)
+          else
+            local cmp_args = trans(args)
+            cmp_source:complete(cmp_args, callback)
           end
         end
-        return false
       end
-
-      COQsources[utils.new_uid(COQsources)] = function(args, callback)
-        if go(lhs) then
-          callback(nil)
-        else
-          local cmp_args = trans(args)
-          cmp_source:complete(cmp_args, callback)
-        end
-      end
-    end
-
-    local go, err = pcall(cont)
+    )
     if not go then
       vim.api.nvim_err_writeln(err)
     end
