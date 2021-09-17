@@ -37,7 +37,7 @@ The rest of object are specific to each individual source.
 {
   src = "repl",
   sh = "zsh",
-  shell = { p = perl, n = node ... },
+  shell = { p = "perl", n = "node", ... },
   max_lines = 99,
   deadline = 500,
   unsafe = { "rm", "poweroff", "mv", ... }
