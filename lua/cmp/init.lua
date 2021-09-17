@@ -82,21 +82,23 @@ M.register_source =
           cmp_source = {cmp_source, "table"}
         }
         local triggers =
-          (cmp_source.get_trigger_characters or utils.constantly {})()
+          (cmp_source.get_trigger_characters or utils.constantly {})(cmp_source)
 
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
           fn = function(args, callback)
             local cmp_args = trans(args)
             if
-              not (cmp_source.is_available or utils.constantly(true))() or
+              not (cmp_source.is_available or utils.constantly(true))(
+                cmp_source
+              ) or
                 not should_cont(triggers, cmp_args.context.cursor_before_line)
              then
               callback(nil)
             else
-              local _ = (cmp_source.complete or function(args, callback)
+              local _ = (cmp_source.complete or function(_, args, callback)
                   callback(args)
-                end)(cmp_args, callback)
+                end)(cmp_source, cmp_args, callback)
             end
           end
         }
