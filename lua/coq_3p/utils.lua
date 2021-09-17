@@ -16,6 +16,13 @@ M.noop = function(...)
   return ...
 end
 
+M.constantly = function(...)
+  local x = {...}
+  return function()
+    return unpack(x)
+  end
+end
+
 M.debug_err = function(...)
   if DEBUG then
     vim.api.nvim_err_writeln(table.concat({...}, "\n"))
