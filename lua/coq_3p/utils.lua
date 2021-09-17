@@ -16,9 +16,59 @@ M.noop = function(...)
   return ...
 end
 
+M.constantly = function(...)
+  local x = {...}
+  return function()
+    return unpack(x)
+  end
+end
+
 M.debug_err = function(...)
   if DEBUG then
     vim.api.nvim_err_writeln(table.concat({...}, "\n"))
+  end
+end
+
+M.freeze = function(name, original)
+  vim.validate {
+    name = {name, "string"},
+    original = {original, "table"}
+  }
+
+  local proxy =
+    setmetatable(
+    {},
+    {
+      __index = function(_, key)
+        if original[key] == nil then
+          error("NotImplementedError :: " .. name .. "->" .. key)
+        else
+          return original[key]
+        end
+      end,
+      __newindex = function(_, key, val)
+        error(
+          "TypeError :: " ..
+            vim.inspect {key, val} .. "->frozen<" .. name .. ">"
+        )
+      end
+    }
+  )
+  return proxy
+end
+
+M.new_uid = function(map)
+  vim.validate {
+    map = {map, "table"}
+  }
+
+  local key = nil
+  while true do
+    if not key or map[key] then
+      key = math.floor(math.random() * 10000)
+    else
+      return key
+    end
   end
 end
 
