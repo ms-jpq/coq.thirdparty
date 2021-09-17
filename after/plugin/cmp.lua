@@ -18,7 +18,9 @@ M.register_source =
         args_cache = {
           offset = col,
           context = {cursor_before_line = lhs},
-          ctx = {triggerKind = vim.lsp.protocol.CompletionTriggerKind.Invoked}
+          completion_context = {
+            triggerKind = vim.lsp.protocol.CompletionTriggerKind.Invoked
+          }
         }
         return args_cache
       end
@@ -44,12 +46,10 @@ M.register_source =
           cmp_source = {cmp_source, "table"}
         }
         local triggers = cmp_source:get_trigger_characters()
-        for idx, char in ipairs(triggers) do
-          vim.validate {idx = {idx, "number"}, char = {char, "string"}}
-        end
+        vim.validate {triggers = {triggers, "table"}}
 
         COQsources[utils.new_uid(COQsources)] = function(args, callback)
-          if should_cont(triggers, lhs) then
+          if not cmp_source:is_available() or not should_cont(triggers, lhs) then
             callback(nil)
           else
             local cmp_args = trans(args)
