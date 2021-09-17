@@ -18,7 +18,11 @@ return function()
     function src.get_trigger_characters()
       return {}
     end
-    function src.complete(_, args, callback)
+    function src.complete(_, cmp_args, callback)
+      local args = {
+        pos = {cmp_args.context.cursor.line,cmp_args.context.cursor.col},
+        line = cmp_args.context.cursor_line
+      }
       val(args, callback)
     end
     function src.resolve(_, item, callback)
