@@ -94,4 +94,4 @@ end)()
 
 M.lsp = vim.lsp.protocol
 
-return M
+return utils.freeze("cmp", M)
