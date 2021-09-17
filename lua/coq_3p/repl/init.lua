@@ -1,13 +1,17 @@
 local trigger = " "
 
 return function(spec)
+  local sh = spec.sh or vim.env.SHELL or (utils.is_win and "cmd" or "sh")
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
+  local deadline = spec.deadline or 1000
   local unsafe = spec.unsafe or require("coq_3p.repl.unsafe")
 
   vim.validate {
+    sh = {sh, "string"},
     shell = {shell, "table"},
     max_lines = {max_lines, "number"},
+    deadline = {deadline, "number"},
     unsafe = {unsafe, "table"}
   }
   for key, val in pairs(shell) do
@@ -31,7 +35,6 @@ return function(spec)
   end)()
 
   local utils = require("coq_3p.utils")
-  local sh = vim.env.SHELL or (utils.is_win and "cmd" or "sh")
 
   local parse = function(line)
     local bottom = {
@@ -223,6 +226,7 @@ return function(spec)
       else
         vim.fn.chansend(chan, parsed.match)
         vim.fn.chanclose(chan, "stdin")
+        vim.defer_fn(kill, deadline)
         return kill
       end
     end
