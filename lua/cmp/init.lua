@@ -65,7 +65,6 @@ M.register_source =
   end
 
   return function(name, cmp_source)
-    print(vim.inspect{ name, cmp_source })
     local go, err =
       pcall(
       function()
@@ -77,14 +76,17 @@ M.register_source =
         local triggers = cmp_source:get_trigger_characters()
         vim.validate {triggers = {triggers, "table"}}
 
-        COQsources[utils.new_uid(COQsources)] = function(args, callback)
-          if not cmp_source:is_available() or not should_cont(triggers, lhs) then
-            callback(nil)
-          else
-            local cmp_args = trans(args)
-            cmp_source:complete(cmp_args, callback)
+        COQsources[utils.new_uid(COQsources)] = {
+          name = name,
+          fn = function(args, callback)
+            if not cmp_source:is_available() or not should_cont(triggers, lhs) then
+              callback(nil)
+            else
+              local cmp_args = trans(args)
+              cmp_source:complete(cmp_args, callback)
+            end
           end
-        end
+        }
       end
     )
     if not go then
