@@ -16,7 +16,7 @@ return function()
       return ""
     end
     function src:get_trigger_characters()
-      return ""
+      return {}
     end
     function src:complete(args, callback)
       val(args, callback)

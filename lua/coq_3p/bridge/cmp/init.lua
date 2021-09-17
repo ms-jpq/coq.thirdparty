@@ -6,6 +6,12 @@ return function(cmp_sources)
   }
 
   for _, cmp_source in pairs(cmp_sources) do
-    local 
+    vim.validate {
+      cmp_source = {cmp_source, "table"}
+    }
+    local coq_source = function(args, callback)
+      local cmp_args = {}
+      cmp_source:complete(cmp_args, callback)
+    end
   end
 end
