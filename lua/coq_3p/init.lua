@@ -1,20 +1,10 @@
-local uid = function(sources)
-  local key = nil
-  while true do
-    if not key or sources[key] then
-      key = math.floor(math.random() * 10000)
-    else
-      return key
-    end
-  end
-end
-
 return function(sources)
   COQsources = COQsources or {}
   vim.validate {
     COQsources = {COQsources, "table"},
     sources = {sources, "table"}
   }
+  local utils = require("coq_3p.utils")
 
   for _, spec in ipairs(sources) do
     vim.validate {
@@ -26,7 +16,7 @@ return function(sources)
     if go then
       local go, fn = pcall(factory, spec)
       if go then
-        COQsources[uid(COQsources)] = {
+        COQsources[utils.new_uid(COQsources)] = {
           name = spec.short_name or string.upper(spec.src),
           fn = fn
         }

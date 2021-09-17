@@ -22,6 +22,21 @@ M.debug_err = function(...)
   end
 end
 
+M.new_uid = function(map)
+  vim.validate {
+    map = {map, "table"}
+  }
+
+  local key = nil
+  while true do
+    if not key or map[key] then
+      key = math.floor(math.random() * 10000)
+    else
+      return key
+    end
+  end
+end
+
 M.linesep = function()
   local nl = vim.bo.fileformat
   if nl == "unix" then
