@@ -22,6 +22,36 @@ M.debug_err = function(...)
   end
 end
 
+M.freeze = function(name, original)
+  vim.validate {
+    name = {name, "string"},
+    original = {original, "table"}
+  }
+
+  local proxy =
+    setmetatable(
+    {},
+    {
+      __index = function(_, key)
+        if ctx[key] == nil then
+          error("NotImplementedError :: " .. name .. "->" .. key)
+        else
+          return ctx[key]
+        end
+      end
+    },
+    {
+      __newindex = function(_, key, val)
+        error(
+          "TypeError :: " ..
+            vim.inspect {key, val} .. "->frozen<" .. name .. ">"
+        )
+      end
+    }
+  )
+  return proxy
+end
+
 M.new_uid = function(map)
   vim.validate {
     map = {map, "table"}

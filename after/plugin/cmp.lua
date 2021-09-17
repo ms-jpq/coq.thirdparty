@@ -17,7 +17,14 @@ M.register_source =
         local lhs, rhs = utils.split_line(args.line, col)
         args_cache = {
           offset = col,
-          context = {cursor_before_line = lhs},
+          context = utils.freeze(
+            "context",
+            {
+              cursor_line = args.line,
+              cursor_before_line = lhs,
+              cursor_after_line = rhs
+            }
+          ),
           completion_context = {
             triggerKind = vim.lsp.protocol.CompletionTriggerKind.Invoked
           }
