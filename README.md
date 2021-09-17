@@ -110,13 +110,9 @@ requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
 `{ src = "vimtex", short_name = "vTEX" }`
 
-- Cache enabled
-
 ### [Orgmode.nvim](https://github.com/kristijanhusak/orgmode.nvim)
 
 `{ src = "orgmode", short_name = "ORG" }`
-
-- Cache enabled
 
 ---
 
