@@ -1,3 +1,8 @@
+---@class Source
+---@field public src string
+---@field public short_name string | nil
+
+---@param sources Source[]
 return function(sources)
   COQsources = COQsources or {}
   vim.validate {
