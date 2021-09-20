@@ -98,6 +98,7 @@ M.register_source =
             resolve(cmp_source, args.item, callback)
           end,
           exec = function(args, callback)
+            vim.validate {command = {args.command, "string"}}
             exec(cmp_source, args, callback)
           end
         }
