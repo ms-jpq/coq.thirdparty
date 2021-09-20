@@ -24,7 +24,7 @@ M.constantly = function(...)
 end
 
 M.bind = function(fn, ...)
-  vim.validate {fn, "function"}
+  vim.validate {fn = {fn, "function"}}
   local args = {...}
   return function(...)
     return fn(unpack(args), ...)
