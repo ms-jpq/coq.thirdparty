@@ -69,21 +69,33 @@ M.register_source =
           cmp_source = {cmp_source, "table"}
         }
 
+        local can_complete = cmp_source.is_available or utils.constantly(true)
+
+        local complete = cmp_source.complete or (function(_, _, callback)
+            callback(nil)
+          end)
+
+        local resolve = cmp_source.resolve or (function(_, _, callback)
+            callback(nil)
+          end)
+
+        local exec = cmp_source.execute or (function(_, _, callback)
+            callback(nil)
+          end)
+
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
           fn = function(args, callback)
-            local cmp_args = trans(args)
-            if
-              not (cmp_source.is_available or utils.constantly(true))(
-                cmp_source
-              )
-             then
+            if not can_complete(cmp_source) then
               callback(nil)
             else
-              (cmp_source.complete or function(_, args, callback)
-                  callback(args)
-                end)(cmp_source, cmp_args, callback)
+              local cmp_args = trans(args)
+              complete(cmp_source, cmp_args, callback)
             end
+          end,
+          resolve = function(args, callback)
+            vim.validate {item = {args.item, "table"}}
+            resolve(cmp_source, args.item, callback)
           end
         }
       end
