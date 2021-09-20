@@ -96,6 +96,9 @@ M.register_source =
           resolve = function(args, callback)
             vim.validate {item = {args.item, "table"}}
             resolve(cmp_source, args.item, callback)
+          end,
+          exec = function(args, callback)
+            exec(cmp_source, args, callback)
           end
         }
       end
