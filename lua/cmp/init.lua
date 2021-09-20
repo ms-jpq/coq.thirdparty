@@ -69,37 +69,53 @@ M.register_source =
           cmp_source = {cmp_source, "table"}
         }
 
-        local can_complete = cmp_source.is_available or utils.constantly(true)
+        local can_complete =
+          utils.bind(
+          cmp_source.is_available or utils.constantly(true),
+          cmp_source
+        )
 
-        local complete = cmp_source.complete or (function(_, _, callback)
-            callback(nil)
-          end)
+        local complete =
+          utils.bind(
+          cmp_source.complete or function(_, _, callback)
+              callback(nil)
+            end,
+          cmp_source
+        )
 
-        local resolve = cmp_source.resolve or (function(_, _, callback)
-            callback(nil)
-          end)
+        local resolve =
+          utils.bind(
+          cmp_source.resolve or function(_, _, callback)
+              callback(nil)
+            end,
+          cmp_source
+        )
 
-        local exec = cmp_source.execute or (function(_, _, callback)
-            callback(nil)
-          end)
+        local exec =
+          utils.bind(
+          cmp_source.execute or function(_, _, callback)
+              callback(nil)
+            end,
+          cmp_source
+        )
 
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
           fn = function(args, callback)
-            if not can_complete(cmp_source) then
+            if not can_complete() then
               callback(nil)
             else
               local cmp_args = trans(args)
-              complete(cmp_source, cmp_args, callback)
+              complete(cmp_args, callback)
             end
           end,
           resolve = function(args, callback)
             vim.validate {item = {args.item, "table"}}
-            resolve(cmp_source, args.item, callback)
+            resolve(args.item, callback)
           end,
           exec = function(args, callback)
             vim.validate {command = {args.command, "string"}}
-            exec(cmp_source, args, callback)
+            exec(args, callback)
           end
         }
       end

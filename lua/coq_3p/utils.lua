@@ -23,6 +23,14 @@ M.constantly = function(...)
   end
 end
 
+M.bind = function(fn, ...)
+  vim.validate {fn, "function"}
+  local args = {...}
+  return function(...)
+    return fn(unpack(args), ...)
+  end
+end
+
 M.debug_err = function(...)
   if DEBUG then
     vim.api.nvim_err_writeln(table.concat({...}, "\n"))
