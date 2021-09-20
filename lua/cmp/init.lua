@@ -69,7 +69,7 @@ M.register_source =
           cmp_source = {cmp_source, "table"}
         }
 
-        local can_complete =
+        local is_available =
           utils.bind(
           cmp_source.is_available or utils.constantly(true),
           cmp_source
@@ -102,7 +102,7 @@ M.register_source =
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
           fn = function(args, callback)
-            if not can_complete() then
+            if not is_available() then
               callback(nil)
             else
               local cmp_args = trans(args)
