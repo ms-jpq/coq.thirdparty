@@ -11,19 +11,19 @@ return function(sources)
       src = {spec.src, "string"},
       short_name = {spec.short_name, "string", true}
     }
-    local mod = "coq_3p." .. spec.src
-    local go, factory = pcall(require, mod)
-    if go then
-      local go, fn = pcall(factory, spec)
-      if go then
-        COQsources[utils.new_uid(COQsources)] = {
-          name = spec.short_name or string.upper(spec.src),
-          fn = fn
-        }
-      else
-        vim.api.nvim_err_writeln(fn)
-      end
-    else
+
+    local cont = function()
+      local mod = "coq_3p." .. spec.src
+      local factory = require(mod)
+      vim.inspect {factory = {factory, "function"}}
+      COQsources[utils.new_uid(COQsources)] = {
+        name = spec.short_name or string.upper(spec.src),
+        fn = factory(spec)
+      }
+    end
+
+    local go, err = pcall(cont)
+    if not go then
       vim.api.nvim_err_writeln(factory)
     end
   end
