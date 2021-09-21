@@ -193,7 +193,7 @@ return function(spec)
             if #spaces > 0 then
               return spaces
             else
-              return vim.fn.matchstr(parsed.f_match, [[\v[^\w]+$]])
+              return vim.fn.matchstr(parsed.f_match, [[\v\W+$]])
             end
           end)()
 
