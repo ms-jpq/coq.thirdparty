@@ -1,6 +1,5 @@
-local trigger = " "
-
 return function(spec)
+  local utils = require("coq_3p.utils")
   local sh = spec.sh or vim.env.SHELL or (utils.is_win and "cmd" or "sh")
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
@@ -34,8 +33,6 @@ return function(spec)
     return acc
   end)()
 
-  local utils = require("coq_3p.utils")
-
   local parse = function(line)
     local bottom = {
       exec_path = "",
@@ -46,11 +43,11 @@ return function(spec)
 
     local parsed =
       (function()
-      if not vim.endswith(line, trigger) then
+      -- parse `*!...`
+      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`\s*$]])
+      if #f_match <= 0 then
         return bottom
       else
-        -- parse `*!...`
-        local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`\s*$]])
         -- parse out `*! and `
         local match =
           vim.fn.matchstr(f_match, [[\v(^\`[^\!]*\!)@<=.+(\`\s*$)@=]])
@@ -191,6 +188,15 @@ return function(spec)
             return edit
           end)()
 
+          local filter_text = (function()
+            local spaces = vim.fn.matchstr(parsed.f_match, [[\v\s+$]])
+            if #spaces > 0 then
+              return spaces
+            else
+              return vim.fn.matchstr(parsed.f_match, [[\v[^\w]+$]])
+            end
+          end)()
+
           callback {
             isIncomplete = false,
             items = {
@@ -199,7 +205,7 @@ return function(spec)
                 textEdit = text_edit,
                 detail = detail,
                 kind = vim.lsp.protocol.CompletionItemKind.Text,
-                filterText = trigger,
+                filterText = filter_text,
                 insertTextFormat = ins_fmt
               }
             }
