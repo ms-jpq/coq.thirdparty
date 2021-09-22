@@ -53,8 +53,9 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
+    local tail = vim.fn.matchstr(before_cursor, [[\v\S\s+$]])
 
-    if (#cows <= 0) or locked or not vim.endswith(before_cursor, trigger) then
+    if (#cows <= 0) or locked or (#tail <= 0) then
       callback(nil)
     else
       locked = true
