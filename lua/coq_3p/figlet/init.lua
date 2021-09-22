@@ -61,6 +61,7 @@ return function(spec)
       local font = utils.pick(fonts)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
+      local no_comment = c_off(before_cursor)
 
       local stdio = {}
       local on_io = function(_, lines)
@@ -86,6 +87,8 @@ return function(spec)
           return edit
         end)()
 
+        local filter_text = vim.fn.matchstr(no_comment, [[\v\s+$]])
+
         callback {
           isIncomplete = false,
           items = {
@@ -94,7 +97,7 @@ return function(spec)
               textEdit = text_edit,
               detail = big_fig,
               kind = vim.lsp.protocol.CompletionItemKind.Text,
-              filterText = trigger
+              filterText = filter_text
             }
           }
         }
@@ -122,7 +125,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local send = vim.trim(c_off(before_cursor))
+        local send = vim.trim(no_comment)
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
