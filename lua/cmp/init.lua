@@ -91,75 +91,74 @@ M.register_source =
   end)()
 
   return function(name, cmp_source)
-    local go, err =
-      pcall(
-      function()
-        COQsources = COQsources or {}
-        vim.validate {
-          COQsources = {COQsources, "table"},
-          cmp_source = {cmp_source, "table"}
-        }
+    local cont = function()
+      COQsources = COQsources or {}
+      vim.validate {
+        COQsources = {COQsources, "table"},
+        cmp_source = {cmp_source, "table"}
+      }
 
-        local is_available =
-          utils.bind(
-          cmp_source.is_available or utils.constantly(true),
-          cmp_source
-        )
+      local is_available =
+        utils.bind(
+        cmp_source.is_available or utils.constantly(true),
+        cmp_source
+      )
 
-        local complete = (function()
-          local complete = utils.bind(cmp_source.complete or nil_cb, cmp_source)
-          return function(_, args, callback)
-            local new_cb = function(lsp_items)
-              store.clear()
-              if type(lsp_items) == "table" then
-                if type(lsp_items.items) == "table" then
-                  store.populate(lsp_items.items)
-                else
-                  store.populate(lsp_items)
-                end
+      local complete = (function()
+        local complete = utils.bind(cmp_source.complete or nil_cb, cmp_source)
+        return function(_, args, callback)
+          local new_cb = function(lsp_items)
+            store.clear()
+            if type(lsp_items) == "table" then
+              if type(lsp_items.items) == "table" then
+                store.populate(lsp_items.items)
+              else
+                store.populate(lsp_items)
               end
-              callback(lsp_items)
             end
-            return complete(args, new_cb)
+            callback(lsp_items)
           end
-        end)()
+          return complete(args, new_cb)
+        end
+      end)()
 
-        local resolve = utils.bind(cmp_source.resolve or nil_cb, cmp_source)
+      local resolve = utils.bind(cmp_source.resolve or nil_cb, cmp_source)
 
-        local exec = (function()
-          local exec = utils.bind(cmp_source.execute or nil_cb, cmp_source)
-          return function(_, args, callback)
-            local item = store.search(args.title)
-            if item then
-              exec(item, callback)
-            end
+      local exec = (function()
+        local exec = utils.bind(cmp_source.execute or nil_cb, cmp_source)
+        return function(_, args, callback)
+          local item = store.search(args.title)
+          if item then
+            exec(item, callback)
           end
-        end)()
+        end
+      end)()
 
-        COQsources[utils.new_uid(COQsources)] = {
-          name = name,
-          fn = function(args, callback)
-            if not is_available() then
-              callback(nil)
-            else
-              local cmp_args = trans(args)
-              complete(cmp_args, callback)
-            end
-          end,
-          resolve = function(args, callback)
-            vim.validate {item = {args.item, "table"}}
-            resolve(args.item, callback)
-          end,
-          exec = function(args, callback)
-            vim.validate {
-              command = {args.command, "string"},
-              title = {args.title, "string"}
-            }
-            exec(args, callback)
+      COQsources[utils.new_uid(COQsources)] = {
+        name = name,
+        fn = function(args, callback)
+          if not is_available() then
+            callback(nil)
+          else
+            local cmp_args = trans(args)
+            complete(cmp_args, callback)
           end
-        }
-      end
-    )
+        end,
+        resolve = function(args, callback)
+          vim.validate {item = {args.item, "table"}}
+          resolve(args.item, callback)
+        end,
+        exec = function(args, callback)
+          vim.validate {
+            command = {args.command, "string"},
+            title = {args.title, "string"}
+          }
+          exec(args, callback)
+        end
+      }
+    end
+
+    local go, err = pcall(cont)
     if not go then
       vim.api.nvim_err_writeln(err)
     end
