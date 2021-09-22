@@ -66,7 +66,7 @@ Note: `coq.nvim` has _very short_ deadlines by default for auto completions, man
 
 - max_lines :: int :: max lines to return
 
-- deadline :: int :: maxms to wait for execution
+- deadline :: int :: max ms to wait for execution
 
 - unsafe :: Seq 'str :: do not start repl with these executables, ie. `rm`, `sudo`, `mv`, etc
 
