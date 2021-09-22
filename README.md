@@ -114,6 +114,12 @@ requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
 `{ src = "orgmode", short_name = "ORG" }`
 
+### [nvim-dap](https://github.com/mfussenegger/nvim-dap)
+
+`{ src = "dap" }`
+
+Thanks [@davidatbu](https://github.com/davidatbu) <3
+
 ---
 
 ## FYI
