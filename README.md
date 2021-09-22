@@ -31,7 +31,7 @@ The rest of object are specific to each individual source.
 
 ## First party
 
-### REPL
+### Shell REPL
 
 ```lua
 {
