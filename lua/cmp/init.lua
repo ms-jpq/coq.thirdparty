@@ -59,6 +59,37 @@ M.register_source =
     end
   end)()
 
+  local nil_cb = function(_, _, callback)
+    callback(nil)
+  end
+
+  local store =
+    (function()
+    local items = {}
+
+    return {
+      clear = function()
+        items = {}
+      end,
+      populate = function(lsp_items)
+        vim.validate {lsp_items = {lsp_items, "table"}}
+        for key, val in pairs(lsp_items) do
+          vim.validate {key = {key, "number"}, val = {val, "table"}}
+          local cmd = val.command or {}
+          vim.validate {cmd = {cmd, "table"}}
+          local uid = utils.new_uid(items)
+          cmd.title = tostring(uid)
+          val.command = cmd
+          items[uid] = val
+        end
+      end,
+      search = function(title)
+        vim.validate {title = {title, "string"}}
+        return items[tonumber(title)]
+      end
+    }
+  end)()
+
   return function(name, cmp_source)
     local go, err =
       pcall(
@@ -75,29 +106,35 @@ M.register_source =
           cmp_source
         )
 
-        local complete =
-          utils.bind(
-          cmp_source.complete or function(_, _, callback)
-              callback(nil)
-            end,
-          cmp_source
-        )
+        local complete = (function()
+          local complete = utils.bind(cmp_source.complete or nil_cb, cmp_source)
+          return function(_, args, callback)
+            local new_cb = function(lsp_items)
+              store.clear()
+              if type(lsp_items) == "table" then
+                if type(lsp_items.items) == "table" then
+                  store.populate(lsp_items.items)
+                else
+                  store.populate(lsp_items)
+                end
+              end
+              callback(lsp_items)
+            end
+            return complete(args, new_cb)
+          end
+        end)()
 
-        local resolve =
-          utils.bind(
-          cmp_source.resolve or function(_, _, callback)
-              callback(nil)
-            end,
-          cmp_source
-        )
+        local resolve = utils.bind(cmp_source.resolve or nil_cb, cmp_source)
 
-        local exec =
-          utils.bind(
-          cmp_source.execute or function(_, _, callback)
-              callback(nil)
-            end,
-          cmp_source
-        )
+        local exec = (function()
+          local exec = utils.bind(cmp_source.execute or nil_cb, cmp_source)
+          return function(_, args, callback)
+            local item = store.search(args.title)
+            if item then
+              exec(item, callback)
+            end
+          end
+        end)()
 
         COQsources[utils.new_uid(COQsources)] = {
           name = name,
@@ -114,7 +151,10 @@ M.register_source =
             resolve(args.item, callback)
           end,
           exec = function(args, callback)
-            vim.validate {command = {args.command, "string"}}
+            vim.validate {
+              command = {args.command, "string"},
+              title = {args.title, "string"}
+            }
             exec(args, callback)
           end
         }
