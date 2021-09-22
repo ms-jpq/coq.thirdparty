@@ -57,7 +57,8 @@ return function()
   local acc = {}
 
   for key, val in pairs(COQsources) do
-    table.insert(acc, trans(key, val))
+    local src = trans(key, val)
+    table.insert(acc, src)
   end
 
   return acc
