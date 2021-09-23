@@ -13,12 +13,11 @@ return function(sources)
   }
 
   for _, spec in ipairs(sources) do
-    vim.validate {
-      src = {spec.src, "string"},
-      short_name = {spec.short_name, "string", true}
-    }
-
     local cont = function()
+      vim.validate {
+        src = {spec.src, "string"},
+        short_name = {spec.short_name, "string", true}
+      }
       local mod = "coq_3p." .. spec.src
       local factory = require(mod)
       vim.inspect {factory = {factory, "function"}}
