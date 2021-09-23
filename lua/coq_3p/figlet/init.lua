@@ -1,5 +1,3 @@
-local trigger = " "
-
 return function(spec)
   local utils = require("coq_3p.utils")
 
@@ -52,8 +50,9 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
+    local tail = vim.fn.matchstr(before_cursor, [[\v\S\s+$]])
 
-    if (#fonts <= 0) or locked or not vim.endswith(before_cursor, trigger) then
+    if (#fonts <= 0) or locked or (#tail <= 0) then
       callback(nil)
     else
       locked = true
@@ -61,6 +60,7 @@ return function(spec)
       local font = utils.pick(fonts)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
+      local no_comment = c_off(before_cursor)
 
       local stdio = {}
       local on_io = function(_, lines)
@@ -86,6 +86,8 @@ return function(spec)
           return edit
         end)()
 
+        local filter_text = vim.fn.matchstr(no_comment, [[\v\s+$]])
+
         callback {
           isIncomplete = false,
           items = {
@@ -94,7 +96,7 @@ return function(spec)
               textEdit = text_edit,
               detail = big_fig,
               kind = vim.lsp.protocol.CompletionItemKind.Text,
-              filterText = trigger
+              filterText = filter_text
             }
           }
         }
@@ -122,7 +124,7 @@ return function(spec)
         locked = false
         callback(nil)
       else
-        local send = vim.trim(c_off(before_cursor))
+        local send = vim.trim(no_comment)
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
