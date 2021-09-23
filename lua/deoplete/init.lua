@@ -6,7 +6,7 @@ return function()
     local rtps = vim.api.nvim_list_runtime_paths()
     local pattern =
       table.concat(
-      {"rplugin", "python3", "deoplete", "source", "*.py"},
+      {"rplugin", "python3", "deoplete", "sources", "*.py"},
       utils.sep
     )
 
