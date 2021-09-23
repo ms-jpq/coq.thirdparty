@@ -14,15 +14,16 @@ return function(sources)
 
   for _, spec in ipairs(sources) do
     local cont = function()
+      local short_name = spec.short_name or string.upper(spec.src)
       vim.validate {
         src = {spec.src, "string"},
-        short_name = {spec.short_name, "string", true}
+        short_name = {short_name, "string"}
       }
       local mod = "coq_3p." .. spec.src
       local factory = require(mod)
       vim.inspect {factory = {factory, "function"}}
       COQsources[utils.new_uid(COQsources)] = {
-        name = spec.short_name or string.upper(spec.src),
+        name = short_name,
         fn = factory(spec)
       }
     end
