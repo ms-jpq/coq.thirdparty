@@ -1,8 +1,6 @@
-local trigger = " "
+local utils = require("coq_3p.utils")
 
 return function(spec)
-  local utils = require("coq_3p.utils")
-
   local cow_path = vim.fn.exepath("cowsay")
 
   local cows =

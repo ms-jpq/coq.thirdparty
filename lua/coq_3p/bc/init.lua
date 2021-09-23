@@ -1,10 +1,10 @@
+local utils = require("coq_3p.utils")
+
 return function(spec)
   local precision = spec.precision or 6
   vim.validate {
     precision = {precision, "number"}
   }
-
-  local utils = require("coq_3p.utils")
 
   local bc_path = vim.fn.exepath("bc")
 

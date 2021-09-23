@@ -1,6 +1,6 @@
-return function(spec)
-  local utils = require("coq_3p.utils")
+local utils = require("coq_3p.utils")
 
+return function(spec)
   local fig_path = vim.fn.exepath("figlet")
 
   local fonts =

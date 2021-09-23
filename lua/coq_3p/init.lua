@@ -1,3 +1,5 @@
+local utils = require("coq_3p.utils")
+
 ---@class Source
 ---@field public src string
 ---@field public short_name string | nil
@@ -9,7 +11,6 @@ return function(sources)
     COQsources = {COQsources, "table"},
     sources = {sources, "table"}
   }
-  local utils = require("coq_3p.utils")
 
   for _, spec in ipairs(sources) do
     vim.validate {
