@@ -13,7 +13,7 @@ return function(spec)
     local _, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
     -- match before =
-    local match = vim.trim(vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]]))
+    local match = vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]])
 
     if (#bc_path <= 0) or locked or (#match <= 0) then
       callback(nil)
@@ -26,13 +26,23 @@ return function(spec)
         if #ans <= 0 then
           callback(nil)
         else
+          local filter_text = (function()
+            local spaces = vim.fn.matchstr(before_cursor, [[\v\s+$]])
+            if #spaces > 0 then
+              return spaces
+            else
+              return vim.fn.matchstr(before_cursor, [[\v\=\s*$]])
+            end
+          end)()
+
           callback {
             isIncomplete = false,
             items = {
               {
                 label = "= " .. ans,
                 insertText = ans,
-                detail = match .. " = " .. ans,
+                detail = vim.trim(match) .. " = " .. ans,
+                filterText = filter_text,
                 kind = vim.lsp.protocol.CompletionItemKind.Value
               }
             }
@@ -66,8 +76,10 @@ return function(spec)
         locked = false
         callback(nil)
       else
+        local _, c_off = utils.comment()
+        local no_comment = c_off(match)
         local scale = "scale=" .. precision .. ";"
-        local send = scale .. vim.trim(match) .. "\n"
+        local send = scale .. vim.trim(no_comment) .. "\n"
         vim.fn.chansend(chan, send)
         vim.fn.chanclose(chan, "stdin")
         return function()
