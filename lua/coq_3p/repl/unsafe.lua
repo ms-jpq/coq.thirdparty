@@ -17,6 +17,7 @@ local fs = {
   "rm",
   "rsync",
   "scp",
+  "sgdisk",
   "wipefs"
 }
 
