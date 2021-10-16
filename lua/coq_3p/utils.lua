@@ -12,6 +12,8 @@ local M = {}
 
 M.is_win = vim.fn.has("win32") == 1
 
+M.sep = is_win and [[\]] or "/"
+
 M.noop = function(...)
   return ...
 end

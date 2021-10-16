@@ -11,12 +11,13 @@ local sudo = {
 }
 
 local fs = {
-  "dd",
   "cp",
+  "dd",
   "mv",
   "rm",
   "rsync",
-  "scp"
+  "scp",
+  "wipefs"
 }
 
 local mkfs = {

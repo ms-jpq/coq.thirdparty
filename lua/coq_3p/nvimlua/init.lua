@@ -1,3 +1,5 @@
+local utils = require("coq_3p.utils")
+
 return function(spec)
   local conf_only = true
 
@@ -8,8 +10,6 @@ return function(spec)
   vim.validate {
     conf_only = {conf_only, "boolean"}
   }
-
-  local utils = require("coq_3p.utils")
 
   local lsp_kinds = vim.lsp.protocol.CompletionItemKind
 

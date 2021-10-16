@@ -1,3 +1,5 @@
+local utils = require("coq_3p.utils")
+
 ---@class Source
 ---@field public src string
 ---@field public short_name string | nil
@@ -9,20 +11,19 @@ return function(sources)
     COQsources = {COQsources, "table"},
     sources = {sources, "table"}
   }
-  local utils = require("coq_3p.utils")
 
   for _, spec in ipairs(sources) do
-    vim.validate {
-      src = {spec.src, "string"},
-      short_name = {spec.short_name, "string", true}
-    }
-
     local cont = function()
+      local short_name = spec.short_name or string.upper(spec.src)
+      vim.validate {
+        src = {spec.src, "string"},
+        short_name = {short_name, "string"}
+      }
       local mod = "coq_3p." .. spec.src
       local factory = require(mod)
       vim.inspect {factory = {factory, "function"}}
       COQsources[utils.new_uid(COQsources)] = {
-        name = spec.short_name or string.upper(spec.src),
+        name = short_name,
         fn = factory(spec)
       }
     end
