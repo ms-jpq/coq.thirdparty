@@ -1,11 +1,18 @@
 return function(spec)
+  local tmp_accept_key = spec.tmp_accept_key or "<c-r>"
+  vim.validate {tmp_accept_key = {tmp_accept_key, "string"}}
+
+  COQcopilot = function()
+    return vim.fn["copilot#Accept"]() .. "\n"
+  end
+
   vim.g.copilot_no_tab_map = true
   vim.g.copilot_assume_mapped = true
   vim.g.copilot_tab_fallback = ""
   vim.api.nvim_set_keymap(
     "i",
-    "<a-l>",
-    [[copilot#Accept()]],
+    tmp_accept_key,
+    [[v:lua.COQcopilot()]],
     {nowait = true, silent = true, expr = true}
   )
 
