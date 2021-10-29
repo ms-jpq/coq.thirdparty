@@ -16,6 +16,7 @@ Install the repo the normal way, and then:
 require("coq_3p") {
   { src = "nvimlua", short_name = "nLUA" },
   { src = "vimtex", short_name = "vTEX" },
+  { src = "copilot", short_name = "COP", tmp_accept_key = "<c-r>" },
   ...
   { src = "demo" },
 }
@@ -105,6 +106,14 @@ requires - [`figlet`](https://linux.die.net/man/6/figlet)
 requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
 ## Third parties
+
+### [Copilot](https://github.com/github/copilot.vim)
+
+`{ src = "copilot", short_name = "COP", tmp_accept_key = "<c-r>" }`
+
+Hitting `tmp_accept_key` will accept the suggestions once they are shown.
+
+**This is just a quick workaround**, if its at all possible i'd like to remove `tmp_accept_key`, and include copilot suggestions right in the completion popup.
 
 ### [VimTex](https://github.com/lervag/vimtex)
 

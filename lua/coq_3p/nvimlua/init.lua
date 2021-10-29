@@ -1,7 +1,12 @@
 local utils = require("coq_3p.utils")
 
 return function(spec)
-  local conf_only = spec.conf_only ~= nil and spec.conf_only or true
+  local conf_only = true
+
+  if spec.conf_only ~= nil then
+    conf_only = spec.conf_only
+  end
+
   vim.validate {
     conf_only = {conf_only, "boolean"}
   }
