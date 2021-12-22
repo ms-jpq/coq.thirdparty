@@ -129,7 +129,7 @@ Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 
 ### [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 
-`{ src = "orgmode", short_name = "ORG" }`
+`{ src = "dap" }`
 
 Thanks [@davidatbu](https://github.com/davidatbu) <3
 
