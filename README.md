@@ -123,6 +123,10 @@ Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 
 `{ src = "orgmode", short_name = "ORG" }`
 
+### [vim-dadbod-completion](https://github.com/kristijanhusak/vim-dadbod-completion)
+
+`{ src = "vim_dadbod_completion", short_name = "DB"}`
+
 ### [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 
 `{ src = "dap" }`
