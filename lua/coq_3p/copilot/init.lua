@@ -2,8 +2,9 @@ return function(spec)
   local accept_key = spec.accept_key
   if not accept_key then
     vim.api.nvim_err_writeln(
-      [[Please update :: { src = "copilot", short_name = "COP", accept_key = "<something like c-f would work>" }]]
+      [[Please update :: { src = "copilot", short_name = "COP", accept_key = "|something like <c-f> would work|" }]]
     )
+    accept_key = "<c-f>"
   end
 
   COQcopilot = function()
@@ -35,7 +36,7 @@ return function(spec)
         vim.validate {
           position = {suggestion.position, "table"},
           label = {suggestion.displayText, "string"},
-          new_text = {suggestion.text, "string"},
+          new_text = {suggestion.text, "string"}
           --range = {suggestion.range, "table"}
         }
 
@@ -54,7 +55,8 @@ return function(spec)
           local item = {
             preselect = true,
             label = suggestion.displayText,
-            insertText = suggestion.text
+            insertText = suggestion.text,
+            documentation = suggestion.displayText
           }
           callback(
             {
