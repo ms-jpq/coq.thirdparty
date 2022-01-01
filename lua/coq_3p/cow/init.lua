@@ -1,6 +1,9 @@
 local utils = require("coq_3p.utils")
 
 return function(spec)
+  local trigger = spec.trigger
+  vim.validate {trigger = {trigger, "string", true}}
+
   local cow_path = vim.fn.exepath("cowsay")
 
   local cows =
@@ -51,7 +54,9 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
-    local tail = vim.fn.matchstr(before_cursor, [[\v\S\s+$]])
+    local tail =
+      trigger and utils.match_tail(trigger, before_cursor) or
+      vim.fn.matchstr(before_cursor, [[\v\S+\s$]])
 
     if (#cows <= 0) or locked or (#tail <= 0) then
       callback(nil)
@@ -61,7 +66,7 @@ return function(spec)
       local cow, style = utils.pick(cows), utils.pick(styles)
       local width = tostring(vim.api.nvim_win_get_width(0))
       local c_on, c_off = utils.comment()
-      local no_comment = c_off(before_cursor)
+      local no_comment = c_off(tail)
 
       local stdio = {}
       local on_io = function(_, lines)
@@ -87,13 +92,15 @@ return function(spec)
           return edit
         end)()
 
-        local filter_text = vim.fn.matchstr(no_comment, [[\v\s+$]])
+        local filter_text =
+          trigger and trigger or vim.fn.matchstr(no_comment, [[\v\s+$]])
 
         callback {
-          isIncomplete = false,
+          isIncomplete = true,
           items = {
             {
               label = "🐮",
+              preselect = trigger and true or vim.NIL,
               textEdit = text_edit,
               detail = big_cow,
               kind = vim.lsp.protocol.CompletionItemKind.Unit,

@@ -30,7 +30,7 @@ return function(sources)
 
     local go, err = pcall(cont)
     if not go then
-      vim.api.nvim_err_writeln(factory)
+      vim.api.nvim_err_writeln(err)
     end
   end
 end

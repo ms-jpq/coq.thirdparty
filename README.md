@@ -16,7 +16,7 @@ Install the repo the normal way, and then:
 require("coq_3p") {
   { src = "nvimlua", short_name = "nLUA" },
   { src = "vimtex", short_name = "vTEX" },
-  { src = "copilot", short_name = "COP", tmp_accept_key = "<c-r>" },
+  { src = "copilot", short_name = "COP", accept_key = "<c-f>" },
   ...
   { src = "demo" },
 }
@@ -89,27 +89,31 @@ Note: `coq.nvim` has _very short_ deadlines by default for auto completions, man
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
-### Comment Banner
-
-`{ src = "figlet", short_name = "BIG" }`
-
-![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
-
-requires - [`figlet`](https://linux.die.net/man/6/figlet)
-
 ### Moo
 
-`{ src = "cow" }`
+`{ src = "cow", trigger = "!cow" }`
+
+Use **`trigger = "!cow"`** to only show cowsay when you end a line with `!cow`
 
 ![cowsay.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/cowsay.gif)
 
 requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 
+### Comment Banner
+
+`{ src = "figlet", short_name = "BIG" }`
+
+Use **`trigger = "!big"`** to only show figlet when you end a line with `!big`
+
+![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
+
+requires - [`figlet`](https://linux.die.net/man/6/figlet)
+
 ## Third parties
 
 ### [Copilot](https://github.com/github/copilot.vim)
 
-`{ src = "copilot", short_name = "COP", tmp_accept_key = "<c-r>" }`
+`{ src = "copilot", short_name = "COP", accept_key = "<c-f>" }`
 
 Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 
@@ -122,6 +126,10 @@ Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 ### [Orgmode.nvim](https://github.com/kristijanhusak/orgmode.nvim)
 
 `{ src = "orgmode", short_name = "ORG" }`
+
+### [vim-dadbod-completion](https://github.com/kristijanhusak/vim-dadbod-completion)
+
+`{ src = "vim_dadbod_completion", short_name = "DB"}`
 
 ### [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 

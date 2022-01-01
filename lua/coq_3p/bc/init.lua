@@ -13,7 +13,7 @@ return function(spec)
     local _, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
     -- match before =
-    local match = vim.fn.matchstr(before_cursor, [[\v^.+(\=\s*$)@=]])
+    local match = utils.match_tail("=", before_cursor)
 
     if (#bc_path <= 0) or locked or (#match <= 0) then
       callback(nil)
@@ -36,7 +36,7 @@ return function(spec)
           end)()
 
           callback {
-            isIncomplete = false,
+            isIncomplete = true,
             items = {
               {
                 label = "= " .. ans,

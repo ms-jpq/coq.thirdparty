@@ -45,13 +45,13 @@ return function(spec)
     local parsed =
       (function()
       -- parse `*!...`
-      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`\s*$]])
+      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`$]])
       if #f_match <= 0 then
         return bottom
       else
         -- parse out `*! and `
         local match =
-          vim.fn.matchstr(f_match, [[\v(^\`[^\!]*\!)@<=.+(\`\s*$)@=]])
+          vim.fn.matchstr(f_match, [[\v(^\`[^\!]*\!)@<=.+(\`$)@=]])
 
         local control_chars = (function()
           local chars = vim.fn.matchstr(f_match, [[\v(^\`)@<=[^\!]*]])
@@ -199,7 +199,7 @@ return function(spec)
           end)()
 
           callback {
-            isIncomplete = false,
+            isIncomplete = true,
             items = {
               {
                 label = "🐚 " .. label,
