@@ -35,7 +35,7 @@ return function(spec)
         vim.validate {
           position = {suggestion.position, "table"},
           label = {suggestion.displayText, "string"},
-          new_text = {suggestion.text, "string"},
+          new_text = {suggestion.text, "string"}
           --range = {suggestion.range, "table"}
         }
 
@@ -54,7 +54,8 @@ return function(spec)
           local item = {
             preselect = true,
             label = suggestion.displayText,
-            insertText = suggestion.text
+            insertText = suggestion.text,
+            documentation = suggestion.displayText
           }
           callback(
             {
