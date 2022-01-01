@@ -89,21 +89,25 @@ Note: `coq.nvim` has _very short_ deadlines by default for auto completions, man
 
 requires - [`bc`](https://linux.die.net/man/1/bc)
 
-### Comment Banner
-
-`{ src = "figlet", short_name = "BIG" }`
-
-![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
-
-requires - [`figlet`](https://linux.die.net/man/6/figlet)
-
 ### Moo
 
-`{ src = "cow" }`
+`{ src = "cow", trigger = "!cow" }`
+
+Use **`trigger = "!cow"`** to only show cowsay when you end a line with `!cow`
 
 ![cowsay.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/cowsay.gif)
 
 requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
+
+### Comment Banner
+
+`{ src = "figlet", short_name = "BIG" }`
+
+Use **`trigger = "!big"`** to only show figlet when you end a line with `!big`
+
+![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
+
+requires - [`figlet`](https://linux.die.net/man/6/figlet)
 
 ## Third parties
 

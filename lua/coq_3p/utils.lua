@@ -176,6 +176,21 @@ M.comment = function(cstring)
   return on, off
 end
 
+M.match_tail = function(tail, str)
+  vim.validate {
+    tail = {tail, "string"},
+    str = {str, "string"}
+  }
+  local tail_len = #tail
+
+  if tail_len <= 0 then
+    return ""
+  else
+    local ending = string.sub(str, -tail_len)
+    return ending == tail and string.sub(str, 1, -tail_len - 1) or ""
+  end
+end
+
 M.rand_between = function(lo, hi)
   vim.validate {
     lo = {lo, "number"},
