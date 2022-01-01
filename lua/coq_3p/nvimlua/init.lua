@@ -52,7 +52,10 @@ return function(spec)
       end
     end
 
-    return {isIncomplete = false, items = acc}
+    return {
+      isIncomplete = false,
+      items = acc
+    }
   end
 
   local p_norm = function(path)

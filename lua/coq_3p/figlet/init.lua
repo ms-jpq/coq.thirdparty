@@ -99,7 +99,7 @@ return function(spec)
           trigger and trigger or vim.fn.matchstr(no_comment, [[\v\s+$]])
 
         callback {
-          isIncomplete = false,
+          isIncomplete = true,
           items = {
             {
               label = "🏁",
