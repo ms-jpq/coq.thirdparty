@@ -2,8 +2,9 @@ return function(spec)
   local accept_key = spec.accept_key
   if not accept_key then
     vim.api.nvim_err_writeln(
-      [[Please update :: { src = "copilot", short_name = "COP", accept_key = "<something like c-f would work>" }]]
+      [[Please update :: { src = "copilot", short_name = "COP", accept_key = "|something like <c-f> would work|" }]]
     )
+    accept_key = "<c-f>"
   end
 
   COQcopilot = function()
