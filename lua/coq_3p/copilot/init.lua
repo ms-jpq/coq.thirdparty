@@ -36,8 +36,8 @@ return function(spec)
         vim.validate {
           position = {suggestion.position, "table"},
           label = {suggestion.displayText, "string"},
-          new_text = {suggestion.text, "string"}
-          --range = {suggestion.range, "table"}
+          new_text = {suggestion.text, "string"},
+          range = {suggestion.range, "table"}
         }
 
         local _, u16_col = vim.str_utfindex(args.line, col)
@@ -47,16 +47,51 @@ return function(spec)
         vim.validate {row = {row, "number"}, col = {col, "number"}}
 
         local same_row = cop_row == row
-        local almost_same_col = (cop_col >= u16_col - 2 and cop_col <= u16_col)
+        local col_diff = u16_col - cop_col
+        local almost_same_col = col_diff >= 0 and col_diff < 6
 
         if not (same_row and almost_same_col) then
           callback(nil)
         else
+          local filterText = vim.fn.matchstr(suggestion.text, [[\v^\S+]])
+
+          local range =
+            (function()
+            local fin = suggestion.range["end"]
+
+            vim.validate {
+              start = {suggestion.range.start, "table"},
+              ["end"] = {fin, "table"}
+            }
+
+            local ending =
+              (function()
+              if fin.line ~= row then
+                return fin
+              else
+                return {
+                  line = fin.line,
+                  character = fin.character + col_diff
+                }
+              end
+            end)()
+
+            return {
+              start = suggestion.range.start,
+              ["end"] = ending
+            }
+          end)()
+
           local item = {
             preselect = true,
             label = suggestion.displayText,
             insertText = suggestion.text,
-            documentation = suggestion.displayText
+            filterText = filterText,
+            documentation = suggestion.displayText,
+            textEdit = {
+              newText = suggestion.text,
+              range = range
+            }
           }
           callback(
             {
