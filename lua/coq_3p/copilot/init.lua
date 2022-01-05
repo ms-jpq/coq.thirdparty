@@ -63,6 +63,10 @@ return function(spec)
               start = {suggestion.range.start, "table"},
               ["end"] = {fin, "table"}
             }
+            vim.validate {
+              line = {fin.line, "number"},
+              character = {fin.character, "number"}
+            }
 
             local ending =
               (function()
