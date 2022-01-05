@@ -36,8 +36,8 @@ return function(spec)
         vim.validate {
           position = {suggestion.position, "table"},
           label = {suggestion.displayText, "string"},
-          new_text = {suggestion.text, "string"}
-          --range = {suggestion.range, "table"}
+          new_text = {suggestion.text, "string"},
+          range = {suggestion.range, "table"}
         }
 
         local _, u16_col = vim.str_utfindex(args.line, col)
@@ -56,7 +56,11 @@ return function(spec)
             preselect = true,
             label = suggestion.displayText,
             insertText = suggestion.text,
-            documentation = suggestion.displayText
+            documentation = suggestion.displayText,
+            textEdit = {
+              newText = suggestion.text,
+              range = range
+            }
           }
           callback(
             {
