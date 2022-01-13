@@ -44,8 +44,8 @@ return function(spec)
         }
       )
 
-      return acc
     end
+    return acc
   end)()
 
   local styles = {"-b", "-d", "-g", "-p", "-s", "-t", "-w", "-y"}
