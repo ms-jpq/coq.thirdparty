@@ -103,8 +103,11 @@ return function(spec)
       local copilot = vim.b._copilot
       if copilot then
         vim.validate {copilot = {copilot, "table"}}
-        suggestions = copilot.suggestions or {}
-        vim.validate {suggestions = {suggestions, "table"}}
+        local maybe_suggestions = copilot.suggestions
+        if maybe_suggestions then
+          vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
+          suggestions = maybe_suggestions
+        end
       end
       vim.defer_fn(ooda, 88)
     end
