@@ -2,52 +2,58 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   local trigger = spec.trigger
-  vim.validate {trigger = {trigger, "string", true}}
+  local font_spec = spec.font
+  vim.validate {trigger = {trigger, "string", true}, font_spec = {font_spec, "string", true}}
 
   local fig_path = vim.fn.exepath("figlet")
 
-  local fonts =
-    (function()
-    local acc = {}
+  local fonts = nil
+  if font_spec == nil then
+    fonts =
+      (function()
+      local acc = {}
 
-    if #fig_path > 0 then
-      local stdout = nil
+      if #fig_path > 0 then
+        local stdout = nil
 
-      local fin = function()
-        local fonts_dir = table.concat(stdout, "")
-        vim.fn.readdir(
-          fonts_dir,
-          function(name)
-            if vim.endswith(name, ".flf") then
-              local font = fonts_dir .. "/" .. name
-              table.insert(acc, font)
+        local fin = function()
+          local fonts_dir = table.concat(stdout, "")
+          vim.fn.readdir(
+            fonts_dir,
+            function(name)
+              if vim.endswith(name, ".flf") then
+                local font = fonts_dir .. "/" .. name
+                table.insert(acc, font)
+              end
             end
-          end
+          )
+        end
+
+        vim.fn.jobstart(
+          {fig_path, "-I", "2"},
+          {
+            stderr_buffered = true,
+            stdout_buffered = true,
+            on_exit = function(_, code)
+              if code == 0 and stdout then
+                fin()
+              end
+            end,
+            on_stderr = function(_, lines)
+              utils.debug_err(unpack(lines))
+            end,
+            on_stdout = function(_, lines)
+              stdout = lines
+            end
+          }
         )
+
+        return acc
       end
-
-      vim.fn.jobstart(
-        {fig_path, "-I", "2"},
-        {
-          stderr_buffered = true,
-          stdout_buffered = true,
-          on_exit = function(_, code)
-            if code == 0 and stdout then
-              fin()
-            end
-          end,
-          on_stderr = function(_, lines)
-            utils.debug_err(unpack(lines))
-          end,
-          on_stdout = function(_, lines)
-            stdout = lines
-          end
-        }
-      )
-
-    end
-    return acc
-  end)()
+    end)()
+  else
+    fonts = (function() return {font_spec}end)()
+  end
 
   local locked = false
   return function(args, callback)
