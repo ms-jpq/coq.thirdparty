@@ -104,6 +104,7 @@ requires - [`cowsay`](https://linux.die.net/man/1/cowsay)
 `{ src = "figlet", short_name = "BIG" }`
 
 Use **`trigger = "!big"`** to only show figlet when you end a line with `!big`
+
 Use **`fonts = {"/usr/share/figlet/fonts/standard.flf"}`** specify the list of fonts to choose from
 
 ![figlet.img](https://raw.githubusercontent.com/ms-jpq/coq.artifacts/artifacts/preview/figlet.gif)
