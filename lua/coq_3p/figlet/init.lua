@@ -2,8 +2,8 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   local trigger = spec.trigger
-  local font_spec = spec.font
-  vim.validate {trigger = {trigger, "string", true}, font_spec = {font_spec, "string", true}}
+  local font_spec = spec.fonts
+  vim.validate {trigger = {trigger, "string", true}, font_spec = {font_spec, "table", true}}
 
   local fig_path = vim.fn.exepath("figlet")
 
@@ -52,7 +52,7 @@ return function(spec)
       end
     end)()
   else
-    fonts = (function() return {font_spec}end)()
+    fonts = (function() return font_spec end)()
   end
 
   local locked = false
