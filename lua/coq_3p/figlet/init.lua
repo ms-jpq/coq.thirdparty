@@ -45,8 +45,8 @@ return function(spec)
         }
       )
 
-      return acc
     end
+    return acc
   end)()
 
   local locked = false
