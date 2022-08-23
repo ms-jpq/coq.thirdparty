@@ -4,7 +4,7 @@ return function(spec)
   local sh = spec.sh or vim.env.SHELL or (utils.is_win and "cmd" or "sh")
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
-  local deadline = spec.deadline or 333
+  local deadline = spec.deadline or 888
   local unsafe = spec.unsafe or require("coq_3p.repl.unsafe")
 
   vim.validate {
@@ -45,16 +45,15 @@ return function(spec)
     local parsed =
       (function()
       -- parse `*!...`
-      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.+\`$]])
+      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.*\`.*$]])
       if #f_match <= 0 then
         return bottom
       else
         -- parse out `*! and `
-        local match =
-          vim.fn.matchstr(f_match, [[\v(^\`[^\!]*\!)@<=.+(\`$)@=]])
+        local match = vim.fn.matchstr(f_match, [[\v%(^\`[^\!]*\!)@<=.*%(\`)@=]])
 
         local control_chars = (function()
-          local chars = vim.fn.matchstr(f_match, [[\v(^\`)@<=[^\!]*]])
+          local chars = vim.fn.matchstr(f_match, [[\v%(^\`)@<=[^\!]*]])
           local acc = {}
           for _, char in ipairs(vim.split(chars, "", true)) do
             acc[char] = true
@@ -63,7 +62,7 @@ return function(spec)
         end)()
 
         -- parse space + cmd
-        local cmd = vim.fn.matchstr(match, [[\v(^\s*)@<=\S+]])
+        local cmd = vim.fn.matchstr(match, [[\v%(^\s*)@<=\S+]])
         -- safety check
         if unsafe_set[cmd] then
           utils.debug_err("❌ " .. vim.inspect {cmd, match})
@@ -86,7 +85,7 @@ return function(spec)
 
           if mapped then
             -- trim first word + spaces
-            match = vim.fn.matchstr(match, [[\v(^\S+\s+)@<=.+]])
+            match = vim.fn.matchstr(match, [[\v%(^\S+\s+)@<=.+]])
           end
 
           local parsed = {
@@ -116,17 +115,8 @@ return function(spec)
     local parsed = parse(before_cursor)
     local c_on, _ = utils.comment()
 
-    local text_esc, ins_fmt, comment =
-      (function()
-      local fmts = vim.lsp.protocol.InsertTextFormat
-      local comment = parsed.control_chars["#"] and c_on or utils.noop
-      local text_esc, ins_fmt =
-        unpack(
-        parsed.control_chars["-"] and {utils.noop, fmts.PlainText} or
-          {utils.snippet_escape, fmts.Snippet}
-      )
-      return text_esc, ins_fmt, comment
-    end)()
+    local comment = parsed.control_chars["#"] and c_on or utils.noop
+    local ins_mode = parsed.control_chars["-"] and 1 or 2
 
     if (#parsed.exec_path <= 0) or locked or (#parsed.match <= 0) then
       callback(nil)
@@ -180,7 +170,7 @@ return function(spec)
             local _, hi = vim.str_utfindex(before_cursor)
 
             local edit = {
-              newText = text_esc(detail),
+              newText = detail,
               range = {
                 start = {line = row, character = lo},
                 ["end"] = {line = row, character = hi}
@@ -198,18 +188,18 @@ return function(spec)
             end
           end)()
 
+          local item = {
+            label = "🐚 " .. label,
+            textEdit = text_edit,
+            detail = detail,
+            kind = vim.lsp.protocol.CompletionItemKind.Text,
+            filterText = filter_text,
+            insertTextMode = ins_mode
+          }
+
           callback {
             isIncomplete = true,
-            items = {
-              {
-                label = "🐚 " .. label,
-                textEdit = text_edit,
-                detail = detail,
-                kind = vim.lsp.protocol.CompletionItemKind.Text,
-                filterText = filter_text,
-                insertTextFormat = ins_fmt
-              }
-            }
+            items = {item}
           }
         end
       end
