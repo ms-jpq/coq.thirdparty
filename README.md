@@ -15,7 +15,7 @@ Install the repo the normal way, and then:
 ```lua
 require("coq_3p") {
   { src = "nvimlua", short_name = "nLUA" },
-  { src = "vimtex", short_name = "vTEX" },
+  { src = "vimtex",  short_name = "vTEX" },
   { src = "copilot", short_name = "COP", accept_key = "<c-f>" },
   ...
   { src = "demo" },
@@ -31,6 +31,28 @@ If `short_name` is not specified, it is uppercase `src`.
 The rest of object are specific to each individual source.
 
 ## First party
+
+### Included VimScripts
+
+These sources comes with vim / nvim's [default runtime](https://github.com/neovim/neovim/tree/master/runtime/autoload).
+
+Warning: Using these sources might run quite a bit of vimscript code.
+
+```lua
+{
+  { src = "builtin/ada"     },
+  { src = "builtin/c"       },
+  { src = "builtin/clojure" },
+  { src = "builtin/css"     },
+  { src = "builtin/haskell" },
+  { src = "builtin/html"    },
+  { src = "builtin/js"      },
+  { src = "builtin/php"     },
+  { src = "builtin/syntax"  },
+  { src = "builtin/xml"     },
+
+}
+```
 
 ### Shell REPL
 

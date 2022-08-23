@@ -66,7 +66,7 @@ return function(spec)
     local row, col = unpack(args.pos)
     local before_cursor = utils.split_line(args.line, col)
     local tail =
-      trigger and utils.match_tail(trigger, before_cursor) or
+      trigger and utils.match_tail(trigger, vim.trim(before_cursor)) or
       vim.fn.matchstr(before_cursor, [[\v\S+\s$]])
 
     if #tail > 0 then
