@@ -45,8 +45,9 @@ return function(spec)
 
     local same_row = cop_row == row
     local col_diff = col - cop_col
+    local almost_same_col = math.abs(col_diff) <= 6
 
-    if not same_row then
+    if not (same_row and almost_same_col) then
       return nil
     else
       local filterText = suggestion.text
