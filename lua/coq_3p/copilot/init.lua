@@ -43,12 +43,12 @@ return function(spec)
 
     local same_row = cop_row == row
     local col_diff = col - cop_col
-    local almost_same_col = col_diff >= 0 and col_diff < 6
+    local almost_same_col = col_diff >= -2 and col_diff < 6
 
     if not (same_row and almost_same_col) then
       return nil
     else
-      local filterText = vim.fn.matchstr(suggestion.text, [[\v^\S+]])
+      local filterText = suggestion.text
 
       local range =
         (function()
@@ -97,24 +97,29 @@ return function(spec)
   end
 
   local items = (function()
-    local ooda = nil
-    local suggestions = {}
-    ooda = function()
+    local pull = function()
       local copilot = vim.b._copilot
       if copilot then
         vim.validate {copilot = {copilot, "table"}}
         local maybe_suggestions = copilot.suggestions
         if maybe_suggestions then
           vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
-          suggestions = maybe_suggestions
+          return maybe_suggestions
         end
       end
+    end
+
+    local ooda = nil
+    local suggestions = {}
+    ooda = function()
+      suggestions = pull() or suggestions
       vim.defer_fn(ooda, 88)
     end
     ooda()
 
     return function(row, col)
       local items = {}
+      suggestions = pull() or suggestions
       for _, suggestion in pairs(suggestions) do
         local item = maybe_item(row, col, suggestion)
         if item then
