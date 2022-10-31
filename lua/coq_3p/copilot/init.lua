@@ -50,8 +50,6 @@ return function(spec)
     if not (same_row and almost_same_col) then
       return nil
     else
-      local filterText = suggestion.text
-
       local range =
         (function()
         local fin = suggestion.range["end"]
@@ -83,9 +81,20 @@ return function(spec)
         }
       end)()
 
+      local label = suggestion.displayText
+
+      local filterText = (function()
+        if col_diff > 0 then
+          local adjusted = string.sub(label, col_diff + 1)
+          return adjusted
+        else
+          return label
+        end
+      end)()
+
       local item = {
         preselect = true,
-        label = suggestion.displayText,
+        label = label,
         insertText = suggestion.text,
         filterText = filterText,
         documentation = suggestion.displayText,
