@@ -15,7 +15,7 @@ return function(spec)
     return esc_pum .. vim.fn["copilot#Accept"]()
   end
 
-  vim.g.copilot_hide_during_completion = false
+  -- vim.g.copilot_hide_during_completion = false
   vim.g.copilot_no_tab_map = true
   vim.g.copilot_assume_mapped = true
 
