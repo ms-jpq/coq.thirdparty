@@ -107,8 +107,7 @@ return function(spec)
     end
   end
 
-  local items =
-    (function()
+  local items = (function()
     local pull = function()
       local copilot = vim.b._copilot
 
@@ -132,6 +131,8 @@ return function(spec)
       return nil, {}
     end
 
+    local codes =
+      vim.api.nvim_replace_termcodes("<c-x><c-u>", true, false, true)
     local ooda = nil
     local suggestions = {}
     local uid = ""
@@ -143,8 +144,6 @@ return function(spec)
         local info = vim.fn.complete_info {"pum_visible", "selected"}
         if info.pum_visible == 1 and info.selected == -1 then
           vim.api.nvim_select_popupmenu_item(-1, false, true, {})
-          local codes =
-            vim.api.nvim_replace_termcodes("<c-e><c-x><c-u>", true, false, true)
           vim.api.nvim_feedkeys(codes, "n", false)
         end
       end
