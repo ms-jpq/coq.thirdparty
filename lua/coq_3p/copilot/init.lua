@@ -107,23 +107,48 @@ return function(spec)
     end
   end
 
-  local items = (function()
+  local items =
+    (function()
     local pull = function()
       local copilot = vim.b._copilot
+
       if copilot then
         vim.validate {copilot = {copilot, "table"}}
         local maybe_suggestions = copilot.suggestions
         if maybe_suggestions then
           vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
-          return maybe_suggestions
+          local uuids = {}
+          for _, item in pairs(maybe_suggestions) do
+            local uuid = item.uuid
+            if uuid then
+              vim.validate {uuid = {uuid, "string"}}
+              table.insert(uuids, uuid)
+            end
+          end
+          return maybe_suggestions, uuids
         end
       end
+
+      return nil, {}
     end
 
     local ooda = nil
     local suggestions = {}
+    local uid = ""
     ooda = function()
-      suggestions = pull() or suggestions
+      local maybe_suggestions, uuids = pull()
+      suggestions = maybe_suggestions or suggestions
+      local new_uid = table.concat(uuids, "")
+      if uid ~= new_uid then
+        local info = vim.fn.complete_info {"pum_visible", "selected"}
+        if info.pum_visible == 1 and info.selected == -1 then
+          vim.api.nvim_select_popupmenu_item(-1, false, true, {})
+          local codes =
+            vim.api.nvim_replace_termcodes("<c-e><c-x><c-u>", true, false, true)
+          vim.api.nvim_feedkeys(codes, "n", false)
+        end
+      end
+      uid = new_uid
       vim.defer_fn(ooda, 88)
     end
     ooda()
