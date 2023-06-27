@@ -82,6 +82,7 @@ local misc = {
   "lsof",
   "man",
   "nano",
+  "ncdu",
   "nvim",
   "open",
   "screen",
