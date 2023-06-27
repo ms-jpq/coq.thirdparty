@@ -79,6 +79,7 @@ local misc = {
   "emacs",
   "htop",
   "lsof",
+  "man",
   "nano",
   "nvim",
   "open",
