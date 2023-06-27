@@ -87,6 +87,7 @@ local misc = {
   "sl",
   "sleep",
   "start",
+  "tee",
   "tmux",
   "top",
   "vi",
