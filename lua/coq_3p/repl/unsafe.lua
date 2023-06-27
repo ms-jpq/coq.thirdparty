@@ -1,5 +1,6 @@
 local init = {
   "halt",
+  "launchd",
   "logout",
   "poweroff",
   "reboot",
