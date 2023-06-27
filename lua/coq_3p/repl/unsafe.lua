@@ -1,23 +1,60 @@
 local init = {
   "halt",
+  "logout",
   "poweroff",
   "reboot",
-  "shutdown"
+  "restart",
+  "shutdown",
+  "systemd"
 }
 
-local sudo = {
+local exec = {
+  ".",
+  "nohup",
+  "source",
   "su",
   "sudo"
 }
 
+local sys = {
+  "chpasswd",
+  "chroot",
+  "exportfs",
+  "groupadd",
+  "groupdel",
+  "groupmod",
+  "kill",
+  "killall",
+  "mount",
+  "pkill",
+  "useradd",
+  "userdel",
+  "usermod"
+}
+
 local fs = {
+  "chattr",
+  "chgrp",
+  "chmod",
+  "chown",
   "cp",
   "dd",
+  "fsck",
+  "install",
+  "ln",
+  "mkdir",
+  "mknod",
+  "mktemp",
+  "mmv",
   "mv",
+  "rename",
   "rm",
+  "rmdir",
   "rsync",
   "scp",
+  "setfacl",
   "sgdisk",
+  "touch",
   "wipefs"
 }
 
@@ -37,4 +74,25 @@ local mkfs = {
   "mkfs"
 }
 
-return vim.tbl_flatten {init, sudo, fs, mkfs}
+local misc = {
+  "curl",
+  "emacs",
+  "htop",
+  "lsof",
+  "nano",
+  "nvim",
+  "open",
+  "screen",
+  "sl",
+  "sleep",
+  "start",
+  "tmux",
+  "top",
+  "vi",
+  "vim",
+  "wget",
+  "xdg-open",
+  "yes"
+}
+
+return vim.tbl_flatten {init, exec, sys, fs, mkfs, misc}
