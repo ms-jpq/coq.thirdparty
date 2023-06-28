@@ -1,9 +1,7 @@
 local utils = require("coq_3p.utils")
 
 return function(spec)
-  local sh =
-    spec.sh or vim.env.SHELL or vim.env.ComSpec or
-    (utils.is_win and "cmd.exe" or "sh")
+  local sh = spec.sh or vim.env.SHELL or vim.env.ComSpec or vim.o.shell
   local shell = spec.shell or {}
   local max_lines = spec.max_lines or 888
   local deadline = spec.deadline or 888
