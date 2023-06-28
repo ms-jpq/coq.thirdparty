@@ -47,7 +47,7 @@ return function(spec)
     local parsed =
       (function()
       -- parse `*!...`
-      local f_match = vim.fn.matchstr(line, [[\v\`[\-\#]*\!.*\`.*$]])
+      local f_match = vim.fn.matchstr(line, [[\v\`[\+\-\#]*\!.*\`.*$]])
       if #f_match <= 0 then
         return bottom
       else
@@ -118,6 +118,7 @@ return function(spec)
     local c_on, _ = utils.comment()
 
     local comment = parsed.control_chars["#"] and c_on or utils.noop
+    local replace = not parsed.control_chars["+"]
     local ins_mode = parsed.control_chars["-"] and 1 or 2
 
     if (#parsed.exec_path <= 0) or locked or (#parsed.match <= 0) then
@@ -164,21 +165,28 @@ return function(spec)
             return table.concat(vim.tbl_map(comment, output), utils.linesep())
           end)()
 
-          local text_edit =
+          local edit =
             (function()
-            local before_match =
-              string.sub(before_cursor, 1, #before_cursor - #parsed.f_match)
-            local _, lo = vim.str_utfindex(before_match)
-            local _, hi = vim.str_utfindex(before_cursor)
+            if replace then
+              local before_match =
+                string.sub(before_cursor, 1, #before_cursor - #parsed.f_match)
+              local _, lo = vim.str_utfindex(before_match)
+              local _, hi = vim.str_utfindex(before_cursor)
 
-            local edit = {
-              newText = detail,
-              range = {
-                start = {line = row, character = lo},
-                ["end"] = {line = row, character = hi}
+              return {
+                textEdit = {
+                  newText = detail,
+                  range = {
+                    start = {line = row, character = lo},
+                    ["end"] = {line = row, character = hi}
+                  }
+                }
               }
-            }
-            return edit
+            else
+              return {
+                insertText = utils.linesep() .. detail
+              }
+            end
           end)()
 
           local filter_text = (function()
@@ -192,16 +200,16 @@ return function(spec)
 
           local item = {
             label = "🐚 " .. label,
-            textEdit = text_edit,
             detail = detail,
             kind = vim.lsp.protocol.CompletionItemKind.Text,
             filterText = filter_text,
             insertTextMode = ins_mode
           }
+          local m = vim.tbl_extend("force", item, edit)
 
           callback {
             isIncomplete = true,
-            items = {item}
+            items = {m}
           }
         end
       end
