@@ -1,3 +1,5 @@
+local utils = require("coq_3p.utils")
+
 return function(spec)
   local accept_key = spec.accept_key
   if not accept_key then
@@ -85,8 +87,7 @@ return function(spec)
 
       local filterText = (function()
         if col_diff > 0 then
-          local adjusted = string.sub(label, col_diff + 1)
-          return adjusted
+          return string.sub(label, col_diff + 1)
         else
           return label
         end
@@ -131,8 +132,6 @@ return function(spec)
       return nil, {}
     end
 
-    local codes =
-      vim.api.nvim_replace_termcodes("<c-x><c-u>", true, false, true)
     local ooda = nil
     local suggestions = {}
     local uid = ""
@@ -141,11 +140,7 @@ return function(spec)
       suggestions = maybe_suggestions or suggestions
       local new_uid = table.concat(uuids, "")
       if uid ~= new_uid then
-        local info = vim.fn.complete_info {"pum_visible", "selected"}
-        if info.pum_visible == 1 and info.selected == -1 then
-          vim.api.nvim_select_popupmenu_item(-1, false, true, {})
-          vim.api.nvim_feedkeys(codes, "n", false)
-        end
+        utils.run_completefunc()
       end
       uid = new_uid
       vim.defer_fn(ooda, 88)
@@ -168,15 +163,12 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
     local _, u16_col = vim.str_utfindex(args.line, col)
-    local _ = nil
 
-    (function()
-      callback(
-        {
-          isIncomplete = true,
-          items = items(row, u16_col)
-        }
-      )
-    end)()
+    callback(
+      {
+        isIncomplete = true,
+        items = items(row, u16_col)
+      }
+    )
   end
 end

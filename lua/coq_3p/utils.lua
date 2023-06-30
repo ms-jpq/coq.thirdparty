@@ -223,4 +223,16 @@ M.snippet_escape = function(text)
   return l2
 end
 
+M.run_completefunc = (function()
+  local codes = vim.api.nvim_replace_termcodes("<c-x><c-u>", true, false, true)
+
+  return function()
+    local info = vim.fn.complete_info {"pum_visible", "selected"}
+    if info.pum_visible == 1 and info.selected == -1 then
+      vim.api.nvim_select_popupmenu_item(-1, false, true, {})
+      vim.api.nvim_feedkeys(codes, "n", false)
+    end
+  end
+end)()
+
 return M
