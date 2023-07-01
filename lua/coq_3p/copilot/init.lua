@@ -96,7 +96,6 @@ return function(spec)
       local item = {
         preselect = true,
         label = label,
-        insertText = suggestion.text,
         filterText = filterText,
         documentation = suggestion.displayText,
         textEdit = {
