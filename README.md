@@ -17,6 +17,7 @@ require("coq_3p") {
   { src = "nvimlua", short_name = "nLUA" },
   { src = "vimtex",  short_name = "vTEX" },
   { src = "copilot", short_name = "COP", accept_key = "<c-f>" },
+  { src = "codeium", short_name = "COD" },
   ...
   { src = "demo" },
 }
@@ -142,6 +143,17 @@ requires - [`figlet`](https://linux.die.net/man/6/figlet)
 Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 
 **This is just a quick workaround**, if its at all possible i'd like to remove `tmp_accept_key`, and include copilot suggestions right in the completion popup.
+
+### [Codeium](https://github.com/Exafunction/codeium.vim)
+
+`{ src = "copilot", short_name = "COP" }`
+
+**Can be used at the same time as copilot**
+
+```lua
+-- Can't both show ghost texts though
+vim.g.codeium_render = false
+```
 
 ### [VimTex](https://github.com/lervag/vimtex)
 
