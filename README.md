@@ -146,7 +146,7 @@ Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 
 ### [Codeium](https://github.com/Exafunction/codeium.vim)
 
-`{ src = "copilot", short_name = "COP" }`
+`{ src = "codeium", short_name = "COD" }`
 
 **Can be used at the same time as copilot**
 
