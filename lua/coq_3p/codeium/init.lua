@@ -172,7 +172,8 @@ return function(spec)
   return function(args, callback)
     local row, col = unpack(args.pos)
 
-    vim.fn["codeium#Complete"]()
+    local bufnr = vim.fn.bufnr("")
+    vim.fn["codeium#Complete"](bufnr)
 
     callback(
       {
