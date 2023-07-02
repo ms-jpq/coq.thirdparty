@@ -104,7 +104,7 @@ return function(spec)
 
       local buf = vim.api.nvim_get_current_buf()
       local row_offset_lo = vim.api.nvim_buf_get_offset(buf, start_row)
-      local _, u16_col = vim.str_utfindex(args.line, col)
+      local _, u16_col = vim.str_utfindex(start_line, col)
 
       local acc = {}
       for _, item in pairs(items) do
