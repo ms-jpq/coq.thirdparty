@@ -143,14 +143,14 @@ return function(spec)
               if ro ~= start_row then
                 return co
               else
-                return co + u16_col
+                return co + col_diff
               end
             end
 
             return {
               start = {
                 line = start_row,
-                character = col_shift(start_row, u16_col_start)
+                character = u16_col_start
               },
               ["end"] = {
                 line = end_row,

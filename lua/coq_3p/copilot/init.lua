@@ -80,7 +80,7 @@ return function(spec)
         end
 
         return {
-          start = tran(bin),
+          start = bin,
           ["end"] = tran(fin)
         }
       end)()
