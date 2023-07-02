@@ -54,16 +54,31 @@ return function(spec)
     else
       local range =
         (function()
+        local bin = suggestion.range.start
         local fin = suggestion.range["end"]
 
         vim.validate {
-          start = {suggestion.range.start, "table"},
+          start = {bin, "table"},
           ["end"] = {fin, "table"}
         }
         vim.validate {
-          line = {fin.line, "number"},
-          character = {fin.character, "number"}
+          end_character = {fin.character, "number"},
+          end_line = {fin.line, "number"},
+          start_character = {bin.character, "number"},
+          start_line = {bin.line, "number"}
         }
+
+        local start =
+          (function()
+          if bin.line ~= row then
+            return bin
+          else
+            return {
+              line = bin.line,
+              character = bin.character + col_diff
+            }
+          end
+        end)()
 
         local ending =
           (function()
@@ -78,7 +93,7 @@ return function(spec)
         end)()
 
         return {
-          start = suggestion.range.start,
+          start = start,
           ["end"] = ending
         }
       end)()
