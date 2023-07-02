@@ -104,6 +104,7 @@ return function(spec)
 
       local buf = vim.api.nvim_get_current_buf()
       local row_offset_lo = vim.api.nvim_buf_get_offset(buf, start_row)
+      local _, u16_col = vim.str_utfindex(args.line, col)
 
       local acc = {}
       for _, item in pairs(items) do
@@ -138,14 +139,22 @@ return function(spec)
               end
             end)()
 
+            local col_shift = function(ro, co)
+              if ro ~= start_row then
+                return co
+              else
+                return co + u16_col
+              end
+            end
+
             return {
               start = {
                 line = start_row,
-                character = u16_col_start
+                character = col_shift(start_row, u16_col_start)
               },
               ["end"] = {
                 line = end_row,
-                character = u16_col_end
+                character = col_shift(end_row, u16_col_end)
               }
             }
           end)()

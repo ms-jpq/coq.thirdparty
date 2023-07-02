@@ -68,33 +68,20 @@ return function(spec)
           start_line = {bin.line, "number"}
         }
 
-        local start =
-          (function()
-          if bin.line ~= row then
+        local tran = function(pos)
+          if pos.line ~= row then
             return bin
           else
             return {
-              line = bin.line,
-              character = bin.character + col_diff
+              line = pos.line,
+              character = pos.character + col_diff
             }
           end
-        end)()
-
-        local ending =
-          (function()
-          if fin.line ~= row then
-            return fin
-          else
-            return {
-              line = fin.line,
-              character = fin.character + col_diff
-            }
-          end
-        end)()
+        end
 
         return {
-          start = start,
-          ["end"] = ending
+          start = tran(bin),
+          ["end"] = tran(fin)
         }
       end)()
 
