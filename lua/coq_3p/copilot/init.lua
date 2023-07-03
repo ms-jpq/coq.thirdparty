@@ -114,44 +114,43 @@ return function(spec)
     end
   end
 
-  local items = (function()
-    local pull = function()
-      local copilot = vim.b._copilot
+  local pull = function()
+    local copilot = vim.b._copilot
 
-      if copilot then
-        vim.validate {copilot = {copilot, "table"}}
-        local maybe_suggestions = copilot.suggestions
-        if maybe_suggestions then
-          vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
-          local uuids = {}
-          for _, item in pairs(maybe_suggestions) do
-            local uuid = item.uuid
-            if uuid then
-              vim.validate {uuid = {uuid, "string"}}
-              table.insert(uuids, uuid)
-            end
+    if copilot then
+      vim.validate {copilot = {copilot, "table"}}
+      local maybe_suggestions = copilot.suggestions
+      if maybe_suggestions then
+        vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
+        local uuids = {}
+        for _, item in pairs(maybe_suggestions) do
+          local uuid = item.uuid
+          if uuid then
+            vim.validate {uuid = {uuid, "string"}}
+            table.insert(uuids, uuid)
           end
-          return maybe_suggestions, uuids
         end
+        local uid = table.concat(uuids, "")
+        return maybe_suggestions, uid
       end
-
-      return nil, {}
+    else
+      return nil, ""
     end
+  end
 
-    local ooda = nil
+  local items = (function()
     local suggestions = {}
     local uid = ""
-    ooda = function()
-      local maybe_suggestions, uuids = pull()
+    local function loopie()
+      local maybe_suggestions, new_uid = pull()
       suggestions = maybe_suggestions or suggestions
-      local new_uid = table.concat(uuids, "")
-      if uid ~= new_uid then
+      if uid ~= new_uid and #suggestions >= 1 then
         utils.run_completefunc()
       end
       uid = new_uid
-      vim.defer_fn(ooda, 88)
+      vim.defer_fn(loopie, 88)
     end
-    ooda()
+    loopie()
 
     return function(row, col)
       local items = {}
