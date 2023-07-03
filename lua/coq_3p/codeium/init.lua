@@ -66,7 +66,24 @@ return function(spec)
     }
   end
 
-  local parse = function(buf, start_row, row_offset_lo, u_8col, u16_col, xform)
+  local parse = function(
+    buf,
+    start_line,
+    start_row,
+    row_offset_lo,
+    u_8col,
+    u16_col,
+    xform)
+    vim.validate {
+      buf = {buf, "number"},
+      start_line = {start_line, "string"},
+      start_row = {start_row, "number"},
+      row_offset_lo = {row_offset_lo, "number"},
+      u_8col = {u_8col, "number"},
+      u16_col = {u16_col, "number"},
+      xform = {xform, "table"}
+    }
+
     local start_col = xform.start_offset - row_offset_lo
     local same_row = xform.start_row == start_row
     local col_diff = u_8col - start_col
@@ -185,7 +202,15 @@ return function(spec)
         local xform = trans(start_row, item)
 
         local edit =
-          parse(buf, start_row, row_offset_lo, u_8col, u16_col, xform)
+          parse(
+          buf,
+          start_line,
+          start_row,
+          row_offset_lo,
+          u_8col,
+          u16_col,
+          xform
+        )
         if edit then
           table.insert(acc, edit)
         end
