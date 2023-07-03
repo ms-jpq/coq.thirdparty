@@ -235,4 +235,57 @@ M.run_completefunc = (function()
   end
 end)()
 
+local new_timer = function(timeout, f)
+  vim.validate {
+    timeout = {timeout, "number"},
+    f = {f, "function"}
+  }
+  local timer = vim.loop.new_timer()
+  local cancel = function()
+    if timer then
+      timer:stop()
+      timer:close()
+      timer = nil
+    end
+  end
+  timer:start(
+    timeout,
+    0,
+    function()
+      cancel()
+      f()
+    end
+  )
+  return cancel
+end
+
+M.throttle = function(f, delay)
+  vim.validate {
+    f = {f, "function"},
+    delay = {delay, "number"}
+  }
+
+  local wraped = vim.schedule_wrap(f)
+  local cancel = function()
+  end
+  local touched = 0
+
+  return function()
+    local now = vim.loop.now()
+    local elapsed = now - touched
+
+    local exec = function()
+      touched = now
+      wraped()
+    end
+
+    if elapsed >= delay then
+      exec()
+    else
+      cancel()
+      cancel = new_timer(delay - elapsed, exec)
+    end
+  end
+end
+
 return M

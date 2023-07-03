@@ -123,7 +123,7 @@ return function(spec)
       if maybe_suggestions then
         vim.validate {maybe_suggestions = {maybe_suggestions, "table"}}
         local uuids = {}
-        for _, item in pairs(maybe_suggestions) do
+        for _, item in ipairs(maybe_suggestions) do
           local uuid = item.uuid
           if uuid then
             vim.validate {uuid = {uuid, "string"}}

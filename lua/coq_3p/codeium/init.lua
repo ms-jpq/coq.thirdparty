@@ -13,6 +13,11 @@ return function(spec)
       text = {text, "string"},
       type = {type, "string"}
     }
+    return {
+      prefix = prefix,
+      text = text,
+      type = type
+    }
   end
 
   local trans = function(current_row, item)
@@ -51,7 +56,7 @@ return function(spec)
     }
 
     local acc = {}
-    for _, part in pairs(parts) do
+    for _, part in ipairs(parts) do
       local parsed = tr(part)
       table.insert(acc, parsed)
     end
@@ -95,6 +100,21 @@ return function(spec)
 
     local text = xform.text
     local label = vim.trim(text)
+
+    local filterText = (function()
+      local parts = xform.parts
+      for _, part in ipairs(parts) do
+        if part.type == "COMPLETION_PART_TYPE_INLINE" then
+          local lhs = vim.fn.matchstr(part.prefix, [[\v\w+$]])
+          local rhs = vim.fn.matchstr(part.text, [[\v^\w+]])
+          local text = lhs .. rhs
+          if #text >= 1 then
+            return text
+          end
+        end
+      end
+      return label
+    end)()
 
     local range =
       (function()
@@ -140,7 +160,7 @@ return function(spec)
     local edit = {
       preselect = true,
       label = label,
-      filterText = label,
+      filterText = filterText,
       documentation = label,
       textEdit = {
         newText = text,
@@ -158,7 +178,7 @@ return function(spec)
     vim.validate {acc = {acc, "table", nil}}
 
     local uuids = {}
-    for _, item in pairs(acc or {}) do
+    for _, item in ipairs(acc or {}) do
       local uuid = item.completionId
       if uuid then
         vim.validate {uuid = {uuid, "string"}}
@@ -219,7 +239,11 @@ return function(spec)
     end
   end)()
 
+  vim.g.codeium_manual = true
+
+  local notify = utils.throttle(vim.fn["codeium#Complete"], 66)
   return function(args, callback)
+    notify()
     local row, col = unpack(args.pos)
 
     callback(
