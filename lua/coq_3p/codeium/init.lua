@@ -142,7 +142,7 @@ return function(spec)
             local col_shift = function(ro, co)
               if ro ~= start_row then
                 return co
-              elseif co >= col then
+              elseif co >= u16_col then
                 return co + col_diff
               else
                 return co
