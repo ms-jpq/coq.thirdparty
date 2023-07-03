@@ -76,6 +76,7 @@ return function(spec)
               if pos.character >= col then
                 return pos.character
               else
+                -- TODO: Calculate the diff in u16
                 return pos.character + col_diff
               end
             end)()

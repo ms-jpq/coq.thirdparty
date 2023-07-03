@@ -143,6 +143,7 @@ return function(spec)
               if ro ~= start_row then
                 return co
               elseif co >= u16_col then
+                -- TODO: Calculate the diff in u16
                 return co + col_diff
               else
                 return co
