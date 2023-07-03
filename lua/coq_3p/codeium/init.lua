@@ -142,15 +142,17 @@ return function(spec)
             local col_shift = function(ro, co)
               if ro ~= start_row then
                 return co
-              else
+              elseif co >= col then
                 return co + col_diff
+              else
+                return co
               end
             end
 
             return {
               start = {
                 line = start_row,
-                character = u16_col_start
+                character = col_shift(start_row, u16_col_start)
               },
               ["end"] = {
                 line = end_row,

@@ -72,15 +72,19 @@ return function(spec)
           if pos.line ~= row then
             return bin
           else
-            return {
-              line = pos.line,
-              character = pos.character + col_diff
-            }
+            local character = (function()
+              if pos.character >= col then
+                return pos.character
+              else
+                return pos.character + col_diff
+              end
+            end)()
+            return {line = pos.line, character = character}
           end
         end
 
         return {
-          start = bin,
+          start = trans(bin),
           ["end"] = tran(fin)
         }
       end)()
