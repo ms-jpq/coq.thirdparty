@@ -66,7 +66,7 @@ return function(spec)
     }
   end
 
-  local parse = function(start_row, row_offset_lo, u_8col, u16_col, xform)
+  local parse = function(buf, start_row, row_offset_lo, u_8col, u16_col, xform)
     local start_col = xform.start_offset - row_offset_lo
     local same_row = xform.start_row == start_row
     local col_diff = u_8col - start_col
@@ -184,7 +184,8 @@ return function(spec)
       for _, item in pairs(suggestions) do
         local xform = trans(start_row, item)
 
-        local edit = parse(start_row, row_offset_lo, u_8col, u16_col, xform)
+        local edit =
+          parse(buf, start_row, row_offset_lo, u_8col, u16_col, xform)
         if edit then
           table.insert(acc, edit)
         end
