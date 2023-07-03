@@ -239,11 +239,11 @@ return function(spec)
     end
   end)()
 
-  vim.g.codeium_manual = true
+  -- vim.g.codeium_manual = true
 
-  local notify = utils.throttle(vim.fn["codeium#Complete"], 66)
+  -- local notify = utils.throttle(vim.fn["codeium#Complete"], 66)
   return function(args, callback)
-    notify()
+    -- notify()
     local row, col = unpack(args.pos)
 
     callback(
