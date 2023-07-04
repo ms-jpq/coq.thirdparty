@@ -168,15 +168,13 @@ return function(spec)
             if replace then
               local before_match =
                 string.sub(before_cursor, 1, #before_cursor - #parsed.f_match)
-              local _, lo = vim.str_utfindex(before_match)
-              local _, hi = vim.str_utfindex(before_cursor)
 
               return {
                 textEdit = {
                   newText = detail,
                   range = {
-                    start = {line = row, character = lo},
-                    ["end"] = {line = row, character = hi}
+                    start = {line = row, character = #before_match},
+                    ["end"] = {line = row, character = #before_cursor}
                   }
                 }
               }

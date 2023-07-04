@@ -96,12 +96,11 @@ return function(spec)
 
         local text_edit =
           (function()
-          local _, u16 = vim.str_utfindex(args.line)
           local edit = {
             newText = big_fig,
             range = {
               start = {line = row, character = 0},
-              ["end"] = {line = row, character = u16}
+              ["end"] = {line = row, character = #args.line}
             }
           }
           return edit

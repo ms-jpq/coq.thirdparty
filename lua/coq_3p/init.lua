@@ -21,10 +21,17 @@ return function(sources)
       }
       local mod = "coq_3p." .. spec.src
       local factory = require(mod)
-      vim.inspect {factory = {factory, "function"}}
+      vim.validate {factory = {factory, "function"}}
+
+      local fn, offset_encoding = factory(spec)
+      vim.validate {
+        fn = {fn, "function"},
+        offset_encoding = {offset_encoding, "string", true}
+      }
       COQsources[utils.new_uid(COQsources)] = {
         name = short_name,
-        fn = factory(spec)
+        fn = factory(spec),
+        offset_encoding = offset_encoding
       }
     end
 

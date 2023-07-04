@@ -165,7 +165,7 @@ return function(spec)
     end
   end)()
 
-  return function(args, callback)
+  local fn = function(args, callback)
     local row, col = unpack(args.pos)
     local _, u16_col = vim.str_utfindex(args.line, col)
 
@@ -176,4 +176,6 @@ return function(spec)
       }
     )
   end
+
+  return fn, "utf-16"
 end

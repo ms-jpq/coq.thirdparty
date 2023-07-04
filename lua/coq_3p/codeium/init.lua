@@ -48,12 +48,21 @@ return function(spec)
     local start_row = tonumber(start_position.row) or end_row
     local start_offset = tonumber(range.startOffset) or end_offset
 
-    vim.validate {
-      end_offset = {end_offset, "number"},
-      end_row = {end_row, "number"},
-      start_offset = {start_offset, "number"},
-      start_row = {start_row, "number"}
-    }
+    local go =
+      pcall(
+      function()
+        vim.validate {
+          end_offset = {end_offset, "number"},
+          end_row = {end_row, "number"},
+          start_offset = {start_offset, "number"},
+          start_row = {start_row, "number"}
+        }
+      end
+    )
+
+    if not go then
+      vim.print(item)
+    end
 
     local acc = {}
     for _, part in ipairs(parts) do
