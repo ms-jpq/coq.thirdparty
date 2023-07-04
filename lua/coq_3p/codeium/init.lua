@@ -80,27 +80,19 @@ return function(spec)
     }
   end
 
-  local parse = function(
-    buf,
-    start_line,
-    start_row,
-    row_offset_lo,
-    u_8col,
-    u16_col,
-    xform)
+  local parse = function(buf, start_line, start_row, col, row_offset_lo, xform)
     vim.validate {
       buf = {buf, "number"},
       start_line = {start_line, "string"},
       start_row = {start_row, "number"},
+      col = {col, "number"},
       row_offset_lo = {row_offset_lo, "number"},
-      u_8col = {u_8col, "number"},
-      u16_col = {u16_col, "number"},
       xform = {xform, "table"}
     }
 
     local start_col = xform.start_offset - row_offset_lo
     local same_row = xform.start_row == start_row
-    local col_diff = u_8col - start_col
+    local col_diff = col - start_col
     local almost_same_col = math.abs(col_diff) <= 6
 
     if same_row and almost_same_col then
@@ -133,21 +125,10 @@ return function(spec)
       local end_line =
         unpack(vim.api.nvim_buf_get_lines(buf, end_row, end_row + 1, true))
 
-      local _, u16_col_start = vim.str_utfindex(start_line, start_col)
-      local u16_col_end = (function()
-        local _, u16_col_end = pcall(vim.str_utfindex, end_line, end_col)
-        if go then
-          return u16_col_end
-        else
-          return vim.str_utfindex(end_line)
-        end
-      end)()
-
       local col_shift = function(ro, co)
         if ro ~= start_row then
           return co
-        elseif co >= u16_col then
-          -- TODO: Calculate the diff in u16
+        elseif co >= col then
           return co + col_diff
         else
           return co
@@ -157,11 +138,11 @@ return function(spec)
       return {
         start = {
           line = start_row,
-          character = col_shift(start_row, u16_col_start)
+          character = col_shift(start_row, start_col)
         },
         ["end"] = {
           line = end_row,
-          character = col_shift(end_row, u16_col_end)
+          character = col_shift(end_row, end_col)
         }
       }
     end)()
@@ -215,31 +196,21 @@ return function(spec)
     end
     loopie()
 
-    return function(start_row, u_8col, start_line)
+    return function(row, col, start_line)
       vim.validate {
-        u_8col = {u_8col, "number"},
-        start_row = {start_row, "number"},
+        row = {row, "number"},
+        col = {col, "number"},
         start_line = {start_line, "string"}
       }
 
       local buf = vim.api.nvim_get_current_buf()
-      local row_offset_lo = vim.api.nvim_buf_get_offset(buf, start_row)
-      local _, u16_col = vim.str_utfindex(start_line, u_8col)
+      local row_offset_lo = vim.api.nvim_buf_get_offset(buf, row)
 
       local acc = {}
       for _, item in pairs(suggestions) do
         local xform = trans(start_row, item)
 
-        local edit =
-          parse(
-          buf,
-          start_line,
-          start_row,
-          row_offset_lo,
-          u_8col,
-          u16_col,
-          xform
-        )
+        local edit = parse(buf, start_line, row, col, row_offset_lo, xform)
         if edit then
           table.insert(acc, edit)
         end
