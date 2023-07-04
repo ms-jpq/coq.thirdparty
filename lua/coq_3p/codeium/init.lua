@@ -189,7 +189,7 @@ return function(spec)
       local maybe_suggestions, new_uid = pull()
       suggestions = maybe_suggestions or suggestions
       if uid ~= new_uid and #suggestions >= 1 then
-        -- utils.run_completefunc()
+        utils.run_completefunc()
       end
       uid = new_uid
       vim.defer_fn(loopie, 88)

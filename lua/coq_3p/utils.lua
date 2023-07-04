@@ -223,17 +223,25 @@ M.snippet_escape = function(text)
   return l2
 end
 
-M.run_completefunc = (function()
-  local codes = vim.api.nvim_replace_termcodes("<c-x><c-u>", true, false, true)
-
-  return function()
-    local info = vim.fn.complete_info {"pum_visible", "selected"}
-    if info.pum_visible == 1 and info.selected == -1 then
-      vim.api.nvim_select_popupmenu_item(-1, false, true, {})
-      vim.api.nvim_feedkeys(codes, "n", false)
-    end
+M.run_completefunc = function()
+  local legal_modes = {
+    ["i"] = true,
+    ["ic"] = true,
+    ["ix"] = true
+  }
+  local legal_cmodes = {
+    [""] = true,
+    ["eval"] = true,
+    ["function"] = true,
+    ["ctrl_x"] = true
+  }
+  local info = vim.fn.complete_info {"pum_visible"}
+  local mode = vim.api.nvim_get_mode().mode
+  local comp_mode = vim.fn.complete_info({"mode"}).mode
+  if not info.pum_visible and legal_modes[mode] and legal_cmodes[comp_mode] then
+    COQ.omnifunc(0, "")
   end
-end)()
+end
 
 local new_timer = function(timeout, f)
   vim.validate {
