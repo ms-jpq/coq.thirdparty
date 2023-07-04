@@ -95,7 +95,7 @@ return function(spec)
     local col_diff = col - start_col
     local almost_same_col = math.abs(col_diff) <= 6
 
-    if same_row and almost_same_col then
+    if not (same_row and almost_same_col) then
       return nil
     end
 
