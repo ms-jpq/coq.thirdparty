@@ -25,7 +25,7 @@ return function(spec)
     local range = item.range
     local completion = item.completion
     local suffix = item.suffix
-    local parts = item.completionParts
+    local parts = item.completionParts or {}
     vim.validate {
       current_row = {current_row, "number"},
       completion = {completion, "table"},
