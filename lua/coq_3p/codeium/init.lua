@@ -49,12 +49,22 @@ return function(spec)
     local start_row = tonumber(start_position.row) or end_row
     local start_offset = tonumber(range.startOffset) or end_offset
 
-    vim.validate {
-      end_offset = {end_offset, "number"},
-      end_row = {end_row, "number"},
-      start_offset = {start_offset, "number"},
-      start_row = {start_row, "number"}
-    }
+    local go, err =
+      pcall(
+      function()
+        vim.validate {
+          end_offset = {end_offset, "number"},
+          end_row = {end_row, "number"},
+          start_offset = {start_offset, "number"},
+          start_row = {start_row, "number"}
+        }
+      end
+    )
+
+    if not go then
+      vim.print(item)
+      return nil
+    end
 
     local acc = {}
     for _, part in ipairs(parts) do
@@ -201,10 +211,11 @@ return function(spec)
       local acc = {}
       for _, item in pairs(suggestions) do
         local xform = trans(row, item)
-
-        local edit = parse(buf, start_line, row, col, row_offset_lo, xform)
-        if edit then
-          table.insert(acc, edit)
+        if xform then
+          local edit = parse(buf, start_line, row, col, row_offset_lo, xform)
+          if edit then
+            table.insert(acc, edit)
+          end
         end
       end
       return acc
