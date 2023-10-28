@@ -45,7 +45,7 @@ return function(spec)
     local parsed =
       (function()
       -- parse `*!...`
-      local f_match = vim.fn.matchstr(line, [[\v\`[\+\-\#]*\!.*\`.*$]])
+      local f_match = vim.fn.matchstr(line, [[\v\`[\+\-\#]*\!.*\`\s*$]])
       if #f_match <= 0 then
         return bottom
       else
