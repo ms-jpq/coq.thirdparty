@@ -23,15 +23,24 @@ return function(sources)
       local factory = require(mod)
       vim.validate {factory = {factory, "function"}}
 
-      local fn, offset_encoding = factory(spec)
+      local fn, options = factory(spec)
+      local opts = options or {}
+      local offset_encoding = opts.offset_encoding
+      local resolve = opts.resolve
+      local exec = opts.exec
       vim.validate {
         fn = {fn, "function"},
-        offset_encoding = {offset_encoding, "string", true}
+        opts = {opts, "table", true},
+        offset_encoding = {offset_encoding, "string", true},
+        resolve = {resolve, "function", true},
+        exec = {exec, "function", true}
       }
       COQsources[utils.new_uid(COQsources)] = {
         name = short_name,
         fn = factory(spec),
-        offset_encoding = offset_encoding
+        offset_encoding = offset_encoding,
+        resolve = resolve,
+        exec = exec
       }
     end
 

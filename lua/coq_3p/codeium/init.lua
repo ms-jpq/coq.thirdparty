@@ -157,6 +157,10 @@ return function(spec)
       textEdit = {
         newText = text,
         range = range
+      },
+      command = {
+        title = "COP",
+        command = "#COP"
       }
     }
 
@@ -225,7 +229,7 @@ return function(spec)
   -- vim.g.codeium_manual = true
 
   -- local notify = utils.throttle(vim.fn["codeium#Complete"], 66)
-  return function(args, callback)
+  local fn = function(args, callback)
     -- notify()
     local row, col = unpack(args.pos)
 
@@ -236,4 +240,10 @@ return function(spec)
       }
     )
   end
+  local exec = function()
+    if vim.g.coqbug then
+      print("#COD")
+    end
+  end
+  return fn, {exec = exec}
 end

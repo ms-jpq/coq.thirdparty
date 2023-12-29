@@ -108,6 +108,10 @@ return function(spec)
         textEdit = {
           newText = suggestion.text,
           range = range
+        },
+        command = {
+          title = "COP",
+          command = "#COP"
         }
       }
       return item
@@ -176,5 +180,10 @@ return function(spec)
     )
   end
 
-  return fn, "utf-16"
+  local exec = function()
+    if vim.g.coqbug then
+      print("#COP")
+    end
+  end
+  return fn, {offset_encoding = "utf-16", exec = exec}
 end

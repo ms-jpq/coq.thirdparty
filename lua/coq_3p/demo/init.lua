@@ -2,7 +2,7 @@
 -- Offers suggestions of `vim.lsp.protocol.CompletionItemKind`
 
 return function(spec)
-  return function(args, callback)
+  local fn = function(args, callback)
     local items = {}
 
     -- label      :: display label
@@ -29,4 +29,9 @@ return function(spec)
       items = items
     }
   end
+  local resolve = function()
+  end
+  local exec = function(...)
+  end
+  return fn, {resolve = resolve, exec = exec}
 end
