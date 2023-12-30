@@ -10,6 +10,7 @@ return function(spec)
     local ls = utils.linesep()
     local buf = vim.api.nvim_get_current_buf()
     local ft = vim.api.nvim_buf_get_option(buf, "filetype")
+    local language = (vim.g.tabby_filetype_dict or {})[ft] or ft
     local lines = vim.api.nvim_buf_get_text(buf, 0, 0, row, col, {})
     local before = table.concat(lines, ls)
     local pos = vim.fn.strchars(before)
@@ -17,7 +18,7 @@ return function(spec)
     local text = table.concat(around, ls)
     return {
       filepath = vim.api.nvim_buf_get_name(buf),
-      language = ft,
+      language = language,
       manually = false,
       position = pos,
       text = text
@@ -27,37 +28,40 @@ return function(spec)
   local acc = {}
 
   local resp_cb = function(resp)
-    local choices = (function()
-      if type(resp) == "table" then
-        return resp.choices
-      else
-        return {}
-      end
-    end)()
-    vim.validate {choices = {choices, "table"}}
-    vim.validate {id = {choices.id, "string"}}
-    acc = {}
-    for _, val in pairs(choices) do
-      vim.validate {val = {val, "table"}}
-      vim.validate {
-        index = {val.index, "number"},
-        text = {val.text, "string"},
-        replaceRange = {val.replaceRange, "table"}
-      }
-      vim.validate {
-        start = {val.replaceRange.start, "number"},
-        ["end"] = {val.replaceRange["end"], "number"}
-      }
-      local v = {
-        text = val.text,
-        start = val.replaceRange.start,
-        fin = val.replaceRange["end"]
-      }
-      table.insert(acc, v)
-      vim.fn["tabby#agent#PostEvent"](
-        {type = "view", choice_index = val.index, completion_id = choices.id}
-      )
+    if type(resp) == "userdata" then
+      return
     end
+    vim.validate {id = {resp.id, "string"}, choices = {resp.choices, "table"}}
+    acc =
+      (function()
+      local aacc = {}
+      for _, val in pairs(resp.choices) do
+        vim.validate {val = {val, "table"}}
+        vim.validate {
+          index = {val.index, "number"},
+          text = {val.text, "string"},
+          replaceRange = {val.replaceRange, "table"}
+        }
+        vim.validate {
+          start = {val.replaceRange.start, "number"},
+          ["end"] = {val.replaceRange["end"], "number"}
+        }
+        local arguments = {
+          type = "view",
+          choice_index = val.index,
+          completion_id = resp.id
+        }
+        local v = {
+          text = val.text,
+          start = val.replaceRange.start,
+          fin = val.replaceRange["end"],
+          arguments = arguments
+        }
+        table.insert(aacc, v)
+        vim.fn["tabby#agent#PostEvent"](arguments)
+      end
+      return aacc
+    end)()
   end
 
   local items = function(row, col, line)
@@ -67,7 +71,8 @@ return function(spec)
       vim.validate {
         text = {val.text, "string"},
         start = {val.start, "number"},
-        fin = {val.fin, "number"}
+        fin = {val.fin, "number"},
+        arguments = {val.arguments, "table"}
       }
       local col_diff = col - val.start
       local almost_same_col = math.abs(col_diff) <= 6
@@ -94,7 +99,8 @@ return function(spec)
           },
           command = {
             title = "TAB",
-            command = "#TAB"
+            command = "#TAB",
+            arguments = val.arguments
           }
         }
         table.insert(items, item)
@@ -121,10 +127,11 @@ return function(spec)
     )
   end
 
-  local exec = function()
-    if vim.g.coqbug then
-      print("#TAB")
-    end
+  local exec = function(val)
+    local arguments = val.arguments
+    vim.validate {arguments = {arguments, "table"}}
+    arguments.type = "select"
+    vim.fn["tabby#agent#PostEvent"](arguments)
   end
   return fn, {exec = exec}
 end
