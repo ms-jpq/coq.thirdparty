@@ -35,10 +35,12 @@ return function(spec)
       end
     end)()
     vim.validate {choices = {choices, "table"}}
+    vim.validate {id = {choices.id, "string"}}
     acc = {}
     for _, val in pairs(choices) do
       vim.validate {val = {val, "table"}}
       vim.validate {
+        index = {val.index, "number"},
         text = {val.text, "string"},
         replaceRange = {val.replaceRange, "table"}
       }
@@ -52,6 +54,9 @@ return function(spec)
         fin = val.replaceRange["end"]
       }
       table.insert(acc, v)
+      vim.fn["tabby#agent#PostEvent"](
+        {type = "view", choice_index = val.index, completion_id = choices.id}
+      )
     end
   end
 
