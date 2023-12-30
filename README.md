@@ -155,6 +155,17 @@ Hitting `tmp_accept_key` will accept the suggestions once they are shown.
 vim.g.codeium_render = false
 ```
 
+### [Tabby](https://github.com/TabbyML/vim-tabby)
+
+`{ src = "tabby", short_name = "TAB" }`
+
+**Can be used at the same time as copilot and Codeium**
+
+```lua
+-- Can't both show ghost texts though
+vim.g.codeium_render = false
+```
+
 ### [VimTex](https://github.com/lervag/vimtex)
 
 `{ src = "vimtex", short_name = "vTEX" }`

@@ -2,8 +2,7 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   vim.g.tabby_trigger_mode = "manual"
-  vim.g.tabby_keybinding_accept = "<c-f11>"
-  vim.g.tabby_keybinding_trigger_or_dismiss = "<c-f12>"
+  vim.g.tabby_keybinding_accept = "<NOP>"
 
   local request_id = 0
 
