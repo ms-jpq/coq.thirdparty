@@ -25,13 +25,17 @@ return function(spec)
       position = pos,
       text = text
     }
-    return context, offset
+    return context, buf, offset
   end
 
   local acc = {}
 
-  local resp_cb = function(offset)
-    vim.validate {offset = {offset, "number"}}
+  local resp_cb = function(buf, row, offset)
+    vim.validate {
+      buf = {buf, "number"},
+      row = {row, "number"},
+      offset = {offset, "number"}
+    }
 
     return function(resp)
       if type(resp) == "userdata" then
@@ -58,6 +62,8 @@ return function(spec)
             completion_id = resp.id
           }
           local v = {
+            buf = buf,
+            row = row,
             text = val.text,
             start = val.replaceRange.start - offset,
             fin = val.replaceRange["end"] - offset,
@@ -72,45 +78,50 @@ return function(spec)
   end
 
   local items = function(row, col, line)
+    local buf = vim.api.nvim_get_current_buf()
     local items = {}
     for _, val in pairs(acc) do
       vim.validate {val = {val, "table"}}
       vim.validate {
+        buf = {val.buf, "number"},
+        row = {val.row, "number"},
         text = {val.text, "string"},
         start = {val.start, "number"},
         fin = {val.fin, "number"},
         arguments = {val.arguments, "table"}
       }
-      local col_diff = col - val.start
-      local almost_same_col = math.abs(col_diff) <= utils.MAX_COL_DIFF
-      local fin = (function()
-        if val.fin >= col then
-          return val.fin
-        else
-          return val.fin + col_diff
-        end
-      end)()
-      local range = {
-        start = {line = row, character = val.start},
-        ["end"] = {line = row, character = fin}
-      }
-
-      if almost_same_col then
-        local item = {
-          preselect = true,
-          label = val.text,
-          documentation = val.text,
-          textEdit = {
-            newText = val.text,
-            range = range
-          },
-          command = {
-            title = "TAB",
-            command = "#TAB",
-            arguments = val.arguments
-          }
+      if val.buf == buf and val.row == row then
+        local col_diff = col - val.start
+        local almost_same_col = math.abs(col_diff) <= utils.MAX_COL_DIFF
+        local fin = (function()
+          if val.fin >= col then
+            return val.fin
+          else
+            return val.fin + col_diff
+          end
+        end)()
+        local range = {
+          start = {line = row, character = val.start},
+          ["end"] = {line = row, character = fin}
         }
-        table.insert(items, item)
+
+        if almost_same_col then
+          local item = {
+            preselect = true,
+            label = val.text,
+            documentation = val.text,
+            textEdit = {
+              newText = val.text,
+              range = range
+            },
+            command = {
+              title = "TAB",
+              command = "#TAB",
+              arguments = val.arguments
+            }
+          }
+          table.insert(items, item)
+        end
       end
     end
     return items
@@ -122,9 +133,12 @@ return function(spec)
     end
     local row, col = unpack(args.pos)
 
-    local request_context, offset = ctx(row, col, args.line)
+    local request_context, buf, offset = ctx(row, col, args.line)
     request_id =
-      vim.fn["tabby#agent#ProvideCompletions"](request_context, resp_cb(offset))
+      vim.fn["tabby#agent#ProvideCompletions"](
+      request_context,
+      resp_cb(buf, row, offset)
+    )
 
     callback(
       {
