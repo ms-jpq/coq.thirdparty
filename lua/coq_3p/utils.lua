@@ -10,6 +10,8 @@ local DEBUG = vim.env.COQ_DEBUG
 
 local M = {}
 
+M.MAX_COL_DIFF = 6
+
 M.is_win = vim.fn.has("win32") == 1
 
 M.sep = M.is_win and [[\]] or "/"

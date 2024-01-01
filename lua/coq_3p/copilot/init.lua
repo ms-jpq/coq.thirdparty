@@ -47,7 +47,7 @@ return function(spec)
 
     local same_row = cop_row == row
     local col_diff = col - cop_col
-    local almost_same_col = math.abs(col_diff) <= 6
+    local almost_same_col = math.abs(col_diff) <= utils.MAX_COL_DIFF
 
     if not (same_row and almost_same_col) then
       return nil

@@ -95,7 +95,7 @@ return function(spec)
     local start_col = xform.start_offset - row_offset_lo
     local same_row = xform.start_row == start_row
     local col_diff = col - start_col
-    local almost_same_col = math.abs(col_diff) <= 6
+    local almost_same_col = math.abs(col_diff) <= utils.MAX_COL_DIFF
 
     if not (same_row and almost_same_col) then
       return nil

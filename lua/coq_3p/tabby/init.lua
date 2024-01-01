@@ -82,7 +82,7 @@ return function(spec)
         arguments = {val.arguments, "table"}
       }
       local col_diff = col - val.start
-      local almost_same_col = math.abs(col_diff) <= 6
+      local almost_same_col = math.abs(col_diff) <= utils.MAX_COL_DIFF
       local fin = (function()
         if val.fin >= col then
           return val.fin
