@@ -6,7 +6,8 @@ return function(spec)
 
   local request_id = 0
 
-  local ctx = function(row, col)
+  local ctx = function(row, col, line)
+    local before_cursor = utils.split_line(line, col)
     local ls = utils.linesep()
     local buf = vim.api.nvim_get_current_buf()
     local ft = vim.api.nvim_buf_get_option(buf, "filetype")
@@ -16,52 +17,58 @@ return function(spec)
     local pos = vim.fn.strchars(before)
     local around = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
     local text = table.concat(around, ls)
-    return {
+    local offset = pos - vim.fn.strchars(before_cursor)
+    local context = {
       filepath = vim.api.nvim_buf_get_name(buf),
       language = language,
       manually = false,
       position = pos,
       text = text
     }
+    return context, offset
   end
 
   local acc = {}
 
-  local resp_cb = function(resp)
-    if type(resp) == "userdata" then
-      return
-    end
-    vim.validate {id = {resp.id, "string"}, choices = {resp.choices, "table"}}
-    acc =
-      (function()
-      local aacc = {}
-      for _, val in pairs(resp.choices) do
-        vim.validate {val = {val, "table"}}
-        vim.validate {
-          index = {val.index, "number"},
-          text = {val.text, "string"},
-          replaceRange = {val.replaceRange, "table"}
-        }
-        vim.validate {
-          start = {val.replaceRange.start, "number"},
-          ["end"] = {val.replaceRange["end"], "number"}
-        }
-        local arguments = {
-          type = "view",
-          choice_index = val.index,
-          completion_id = resp.id
-        }
-        local v = {
-          text = val.text,
-          start = val.replaceRange.start,
-          fin = val.replaceRange["end"],
-          arguments = arguments
-        }
-        table.insert(aacc, v)
-        vim.fn["tabby#agent#PostEvent"](arguments)
+  local resp_cb = function(offset)
+    vim.validate {offset = {offset, "number"}}
+
+    return function(resp)
+      if type(resp) == "userdata" then
+        return
       end
-      return aacc
-    end)()
+      vim.validate {id = {resp.id, "string"}, choices = {resp.choices, "table"}}
+      acc =
+        (function()
+        local aacc = {}
+        for _, val in pairs(resp.choices) do
+          vim.validate {val = {val, "table"}}
+          vim.validate {
+            index = {val.index, "number"},
+            text = {val.text, "string"},
+            replaceRange = {val.replaceRange, "table"}
+          }
+          vim.validate {
+            start = {val.replaceRange.start, "number"},
+            ["end"] = {val.replaceRange["end"], "number"}
+          }
+          local arguments = {
+            type = "view",
+            choice_index = val.index,
+            completion_id = resp.id
+          }
+          local v = {
+            text = val.text,
+            start = val.replaceRange.start - offset,
+            fin = val.replaceRange["end"] - offset,
+            arguments = arguments
+          }
+          table.insert(aacc, v)
+          vim.fn["tabby#agent#PostEvent"](arguments)
+        end
+        return aacc
+      end)()
+    end
   end
 
   local items = function(row, col, line)
@@ -115,9 +122,9 @@ return function(spec)
     end
     local row, col = unpack(args.pos)
 
-    local request_context = ctx(row, col)
+    local request_context, offset = ctx(row, col, args.line)
     request_id =
-      vim.fn["tabby#agent#ProvideCompletions"](request_context, resp_cb)
+      vim.fn["tabby#agent#ProvideCompletions"](request_context, resp_cb(offset))
 
     callback(
       {
