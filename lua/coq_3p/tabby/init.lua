@@ -128,6 +128,9 @@ return function(spec)
   end
 
   local fn = function(args, callback)
+    if vim.g.tabby_filetype_dict == nil then
+      return
+    end
     if request_id ~= 0 then
       vim.fn["tabby#agent#CancelRequest"](request_id)
     end
