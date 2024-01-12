@@ -151,11 +151,16 @@ return function(spec)
     )
   end
 
+  local f = "tabby#agent#PostEvent"
+  local ff = "*" .. f
+
   local exec = function(val)
     local arguments = val.arguments
     vim.validate {arguments = {arguments, "table"}}
     arguments.type = "select"
-    vim.fn["tabby#agent#PostEvent"](arguments)
+    if vim.fn.exists(ff) then
+      vim.fn[f](arguments)
+    end
   end
   return fn, {exec = exec}
 end
