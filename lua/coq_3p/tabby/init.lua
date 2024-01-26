@@ -127,22 +127,24 @@ return function(spec)
     return items
   end
 
-  local fn = function(args, callback)
+  local pull = function(row, col, line)
     if vim.g.tabby_filetype_dict == nil then
       return
     end
     if request_id ~= 0 then
       vim.fn["tabby#agent#CancelRequest"](request_id)
     end
-    local row, col = unpack(args.pos)
 
-    local request_context, buf, offset = ctx(row, col, args.line)
+    local request_context, buf, offset = ctx(row, col, line)
     request_id =
       vim.fn["tabby#agent#ProvideCompletions"](
       request_context,
       resp_cb(buf, row, offset)
     )
+  end
 
+  local fn = function(args, callback)
+    local row, col = unpack(args.pos)
     callback(
       {
         isIncomplete = true,
@@ -162,5 +164,25 @@ return function(spec)
       vim.fn[f](arguments)
     end
   end
+
+  local events = {
+    "CursorHoldI",
+    "InsertEnter",
+    "TextChangedI",
+    "TextChangedP"
+  }
+  vim.api.nvim_create_autocmd(
+    events,
+    {
+      pattern = {"*"},
+      callback = function()
+        local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+        row = row - 1
+        local line = vim.api.nvim_get_current_line()
+        pull(row, col, line)
+      end
+    }
+  )
+
   return fn, {exec = exec}
 end
