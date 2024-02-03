@@ -137,10 +137,13 @@ return function(spec)
         end
       end
 
+      local start =
+        start_col == 0 and start_col or col_shift(start_row, start_col)
+
       return {
         start = {
           line = start_row,
-          character = col_shift(start_row, start_col)
+          character = start
         },
         ["end"] = {
           line = end_row,

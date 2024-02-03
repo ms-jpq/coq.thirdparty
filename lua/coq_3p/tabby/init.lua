@@ -61,11 +61,15 @@ return function(spec)
             choice_index = val.index,
             completion_id = resp.id
           }
+          local start = (function()
+            local start = val.replaceRange.start
+            return start == 0 and start or start - offset
+          end)()
           local v = {
             buf = buf,
             row = row,
             text = val.text,
-            start = val.replaceRange.start - offset,
+            start = start,
             fin = val.replaceRange["end"] - offset,
             arguments = arguments
           }

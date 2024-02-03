@@ -68,12 +68,12 @@ return function(spec)
           start_line = {bin.line, "number"}
         }
 
-        local tran = function(pos)
+        local tran = function(pos, lhs)
           if pos.line ~= row then
             return bin
           else
             local character = (function()
-              if pos.character >= col then
+              if pos.character >= col or (lhs and pos.character == 0) then
                 return pos.character
               else
                 -- TODO: Calculate the diff in u16
@@ -85,8 +85,8 @@ return function(spec)
         end
 
         return {
-          start = tran(bin),
-          ["end"] = tran(fin)
+          start = tran(bin, true),
+          ["end"] = tran(fin, false)
         }
       end)()
 
