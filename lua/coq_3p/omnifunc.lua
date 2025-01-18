@@ -30,7 +30,7 @@ local kind_map =
 end)()
 
 local completefunc_items = function(matches)
-  vim.validate {
+  utils.validate {
     matches = {matches, "table"},
     words = {matches.words, "table", true}
   }
@@ -38,7 +38,7 @@ local completefunc_items = function(matches)
   local words = matches.words and matches.words or matches
 
   local parse = function(match)
-    vim.validate {
+    utils.validate {
       match = {match, "table"},
       word = {match.word, "string"},
       abbr = {match.abbr, "string", true},
@@ -104,7 +104,7 @@ local completefunc_items = function(matches)
 end
 
 local omnifunc = function(opts)
-  vim.validate {
+  utils.validate {
     use_cache = {opts.use_cache, "boolean"},
     omnifunc = {opts.omnifunc, "string"},
     filetypes = {opts.filetypes, "table", true}
@@ -113,7 +113,7 @@ local omnifunc = function(opts)
   local filetypes = (function()
     local acc = {}
     for _, ft in ipairs(opts.filetypes or {}) do
-      vim.validate {ft = {ft, "string"}}
+      utils.validate {ft = {ft, "string"}}
       acc[ft] = true
     end
     return acc
@@ -135,7 +135,7 @@ local omnifunc = function(opts)
 
   local fetch = function(line, row, col)
     local pos = omnifunc(1, "")
-    vim.validate {pos = {pos, "number"}}
+    utils.validate {pos = {pos, "number"}}
 
     if pos == -2 or pos == -3 then
       return nil
@@ -149,7 +149,7 @@ local omnifunc = function(opts)
   end
 
   local wrapped = function(line, row, col)
-    vim.validate {
+    utils.validate {
       line = {line, "string"},
       row = {row, "number"},
       col = {col, "number"}

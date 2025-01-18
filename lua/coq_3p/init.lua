@@ -7,7 +7,7 @@ local utils = require("coq_3p.utils")
 ---@param sources Source[]
 return function(sources)
   COQsources = COQsources or {}
-  vim.validate {
+  utils.validate {
     COQsources = {COQsources, "table"},
     sources = {sources, "table"}
   }
@@ -15,13 +15,13 @@ return function(sources)
   for _, spec in ipairs(sources) do
     local cont = function()
       local short_name = spec.short_name or string.upper(spec.src)
-      vim.validate {
+      utils.validate {
         src = {spec.src, "string"},
         short_name = {short_name, "string"}
       }
       local mod = "coq_3p." .. spec.src
       local factory = require(mod)
-      vim.validate {factory = {factory, "function"}}
+      utils.validate {factory = {factory, "function"}}
 
       local fn, options = factory(spec)
       local opts = options or {}
@@ -29,7 +29,7 @@ return function(sources)
       local offset_encoding = opts.offset_encoding
       local resolve = opts.resolve
       local exec = opts.exec
-      vim.validate {
+      utils.validate {
         fn = {fn, "function", true},
         ln = {ln, "function", true},
         opts = {opts, "table", true},

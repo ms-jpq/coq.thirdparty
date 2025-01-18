@@ -2,7 +2,7 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   local trigger = spec.trigger
-  vim.validate {trigger = {trigger, "string", true}}
+  utils.validate {trigger = {trigger, "string", true}}
 
   local cow_path = vim.fn.exepath("cowsay")
 

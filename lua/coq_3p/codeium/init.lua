@@ -2,13 +2,13 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   local tr = function(part)
-    vim.validate {part = {part, "table"}}
+    utils.validate {part = {part, "table"}}
     local line = tonumber(part.line)
     local offset = tonumber(part.offset)
     local prefix = part.prefix
     local text = part.text
     local type = part.type
-    vim.validate {
+    utils.validate {
       prefix = {prefix, "string", true},
       text = {text, "string"},
       type = {type, "string"}
@@ -21,12 +21,12 @@ return function(spec)
   end
 
   local trans = function(current_row, item)
-    vim.validate {item = {item, "table"}}
+    utils.validate {item = {item, "table"}}
     local range = item.range
     local completion = item.completion
     local suffix = item.suffix
     local parts = item.completionParts or {}
-    vim.validate {
+    utils.validate {
       current_row = {current_row, "number"},
       completion = {completion, "table"},
       parts = {parts, "table"},
@@ -38,7 +38,7 @@ return function(spec)
     local end_position = range.endPosition
     local start_position = range.startPosition
 
-    vim.validate {
+    utils.validate {
       end_position = {end_position, "table"},
       start_position = {start_position, "table"},
       text = {text, "string"}
@@ -52,7 +52,7 @@ return function(spec)
     local go, err =
       pcall(
       function()
-        vim.validate {
+        utils.validate {
           end_offset = {end_offset, "number"},
           end_row = {end_row, "number"},
           start_offset = {start_offset, "number"},
@@ -83,7 +83,7 @@ return function(spec)
   end
 
   local parse = function(buf, start_line, start_row, col, row_offset_lo, xform)
-    vim.validate {
+    utils.validate {
       buf = {buf, "number"},
       start_line = {start_line, "string"},
       start_row = {start_row, "number"},
@@ -168,12 +168,12 @@ return function(spec)
   local pull = function()
     local comp = vim.b._codeium_completions or {}
     local acc = comp.items or {}
-    vim.validate {acc = {acc, "table", nil}}
+    utils.validate {acc = {acc, "table", nil}}
     return acc
   end
 
   local items = function(row, col, start_line)
-    vim.validate {
+    utils.validate {
       row = {row, "number"},
       col = {col, "number"},
       start_line = {start_line, "string"}

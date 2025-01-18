@@ -7,7 +7,7 @@ return function(spec)
   local deadline = spec.deadline or 888
   local unsafe = spec.unsafe or require("coq_3p.repl.unsafe")
 
-  vim.validate {
+  utils.validate {
     sh = {sh, "string"},
     shell = {shell, "table"},
     max_lines = {max_lines, "number"},
@@ -15,7 +15,7 @@ return function(spec)
     unsafe = {unsafe, "table"}
   }
   for key, val in pairs(shell) do
-    vim.validate {
+    utils.validate {
       key = {key, "string"},
       val = {val, "string"}
     }
@@ -25,7 +25,7 @@ return function(spec)
     (function()
     local acc = {}
     for key, val in pairs(unsafe) do
-      vim.validate {
+      utils.validate {
         key = {key, "number"},
         val = {val, "string"}
       }
@@ -99,7 +99,7 @@ return function(spec)
       end
     end)()
 
-    vim.validate {
+    utils.validate {
       exec_path = {parsed.exec_path, "string"},
       f_match = {parsed.f_match, "string"},
       match = {parsed.match, "string"},

@@ -3,7 +3,7 @@ local utils = require("coq_3p.utils")
 return function(spec)
   local trigger = spec.trigger
   local font_spec = spec.fonts
-  vim.validate {
+  utils.validate {
     trigger = {trigger, "string", true},
     font_spec = {font_spec, "table", true}
   }

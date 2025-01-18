@@ -72,11 +72,11 @@ M.register_source =
         items = {}
       end,
       populate = function(lsp_items)
-        vim.validate {lsp_items = {lsp_items, "table"}}
+        utils.validate {lsp_items = {lsp_items, "table"}}
         for key, val in pairs(lsp_items) do
-          vim.validate {key = {key, "number"}, val = {val, "table"}}
+          utils.validate {key = {key, "number"}, val = {val, "table"}}
           local cmd = val.command or {}
-          vim.validate {cmd = {cmd, "table"}}
+          utils.validate {cmd = {cmd, "table"}}
           local uid = utils.new_uid(items)
           cmd.title = tostring(uid)
           val.command = cmd
@@ -84,7 +84,7 @@ M.register_source =
         end
       end,
       search = function(title)
-        vim.validate {title = {title, "string"}}
+        utils.validate {title = {title, "string"}}
         return items[tonumber(title)]
       end
     }
@@ -93,7 +93,7 @@ M.register_source =
   return function(name, cmp_source)
     local cont = function()
       COQsources = COQsources or {}
-      vim.validate {
+      utils.validate {
         COQsources = {COQsources, "table"},
         cmp_source = {cmp_source, "table"}
       }
@@ -145,11 +145,11 @@ M.register_source =
           end
         end,
         resolve = function(args, callback)
-          vim.validate {item = {args.item, "table"}}
+          utils.validate {item = {args.item, "table"}}
           resolve(args.item, callback)
         end,
         exec = function(args, callback)
-          vim.validate {
+          utils.validate {
             command = {args.command, "string"},
             title = {args.title, "string"}
           }

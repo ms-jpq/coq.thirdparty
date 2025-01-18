@@ -7,7 +7,7 @@ return function(spec)
     conf_only = spec.conf_only
   end
 
-  vim.validate {
+  utils.validate {
     conf_only = {conf_only, "boolean"}
   }
 

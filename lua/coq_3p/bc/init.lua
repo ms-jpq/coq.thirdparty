@@ -2,7 +2,7 @@ local utils = require("coq_3p.utils")
 
 return function(spec)
   local precision = spec.precision or 6
-  vim.validate {
+  utils.validate {
     precision = {precision, "number"}
   }
 

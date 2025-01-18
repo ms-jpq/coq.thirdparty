@@ -16,6 +16,18 @@ M.is_win = vim.fn.has("win32") == 1
 
 M.sep = M.is_win and [[\]] or "/"
 
+M.validate = (function()
+  if not vim.fn.has("nvim-0.11") then
+    return vim.validate
+  else
+    return function(spec)
+      for name, args in pairs(spec) do
+        vim.validate(name, unpack(args))
+      end
+    end
+  end
+end)()
+
 M.noop = function(...)
   return ...
 end
@@ -28,7 +40,7 @@ M.constantly = function(...)
 end
 
 M.bind = function(fn, ...)
-  vim.validate {fn = {fn, "function"}}
+  M.validate {fn = {fn, "function"}}
   local args = {...}
   return function(...)
     return fn(unpack(args), ...)
@@ -42,7 +54,7 @@ M.debug_err = function(...)
 end
 
 M.freeze = function(name, original)
-  vim.validate {
+  M.validate {
     name = {name, "string"},
     original = {original, "table"}
   }
@@ -70,7 +82,7 @@ M.freeze = function(name, original)
 end
 
 M.new_uid = function(map)
-  vim.validate {
+  M.validate {
     map = {map, "table"}
   }
 
@@ -98,7 +110,7 @@ M.linesep = function()
 end
 
 M.split_line = function(line, col)
-  vim.validate {
+  M.validate {
     line = {line, "string"},
     col = {col, "number"}
   }
@@ -110,7 +122,7 @@ M.split_line = function(line, col)
 end
 
 M.cword = function(line, col)
-  vim.validate {
+  M.validate {
     line = {line, "string"},
     col = {col, "number"}
   }
@@ -122,7 +134,7 @@ M.cword = function(line, col)
 end
 
 M.in_comment = function(line)
-  vim.validate {
+  M.validate {
     line = {line, "string"}
   }
 
@@ -139,7 +151,7 @@ M.in_comment = function(line)
 end
 
 M.comment = function(cstring)
-  vim.validate {
+  M.validate {
     cstring = {cstring, "string", true}
   }
 
@@ -154,7 +166,7 @@ M.comment = function(cstring)
   end)()
 
   local off = function(line)
-    vim.validate {
+    M.validate {
       line = {line, "string"}
     }
     if vim.startswith(line, lhs) and vim.endswith(line, rhs) then
@@ -167,7 +179,7 @@ M.comment = function(cstring)
   end
 
   local on = function(line)
-    vim.validate {
+    M.validate {
       line = {line, "string"}
     }
 
@@ -179,7 +191,7 @@ M.comment = function(cstring)
 end
 
 M.match_tail = function(tail, str)
-  vim.validate {
+  M.validate {
     tail = {tail, "string"},
     str = {str, "string"}
   }
@@ -194,7 +206,7 @@ M.match_tail = function(tail, str)
 end
 
 M.rand_between = function(lo, hi)
-  vim.validate {
+  M.validate {
     lo = {lo, "number"},
     hi = {hi, "number"}
   }
@@ -205,7 +217,7 @@ M.rand_between = function(lo, hi)
 end
 
 M.pick = function(list)
-  vim.validate {
+  M.validate {
     list = {list, "table"}
   }
   local length = #list
@@ -216,7 +228,7 @@ M.pick = function(list)
 end
 
 M.snippet_escape = function(text)
-  vim.validate {
+  M.validate {
     text = {text, "string"}
   }
 
@@ -246,7 +258,7 @@ M.run_completefunc = function()
 end
 
 local new_timer = function(timeout, f)
-  vim.validate {
+  M.validate {
     timeout = {timeout, "number"},
     f = {f, "function"}
   }
@@ -270,7 +282,7 @@ local new_timer = function(timeout, f)
 end
 
 M.throttle = function(f, delay)
-  vim.validate {
+  M.validate {
     f = {f, "function"},
     delay = {delay, "number"}
   }

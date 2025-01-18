@@ -1,13 +1,13 @@
 return function()
   COQsources = COQsources or {}
-  vim.validate {
+  utils.validate {
     COQsources = {COQsources, "table"}
   }
 
   local utils = require("coq_3p.utils")
 
   local trans = function(key, val)
-    vim.validate {
+    utils.validate {
       val = {val, "function"}
     }
 
@@ -27,18 +27,18 @@ return function()
           return {}
         end,
         complete = function(_, cmp_args, callback)
-          vim.validate {
+          utils.validate {
             args = {cmp_args, "table"}
           }
-          vim.validate {
+          utils.validate {
             time = {cmp_args.time, "number"},
             context = {cmp_args.context, "table"}
           }
-          vim.validate {
+          utils.validate {
             cursor = {cmp_args.context.cursor, "table"},
             line = {cmp_args.context.cursor_line, "string"}
           }
-          vim.validate {
+          utils.validate {
             row = {cmp_args.context.cursor.line, "number"},
             col = {cmp_args.context.cursor.col, "number"}
           }
