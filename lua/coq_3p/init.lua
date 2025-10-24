@@ -5,7 +5,7 @@ local utils = require("coq_3p.utils")
 ---@field public short_name string | nil
 
 ---@param sources Source[]
-return function(sources)
+local function setup(sources)
   COQsources = COQsources or {}
   utils.validate {
     COQsources = {COQsources, "table"},
@@ -53,3 +53,5 @@ return function(sources)
     end
   end
 end
+
+return setmetatable({ setup = setup }, { __call = function(_, ...) setup(...) end })
