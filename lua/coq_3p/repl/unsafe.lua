@@ -99,4 +99,4 @@ local misc = {
   "yes"
 }
 
-return vim.tbl_flatten {init, exec, sys, fs, mkfs, misc}
+return vim.iter{init, exec, sys, fs, mkfs, misc}:flatten():totable()
