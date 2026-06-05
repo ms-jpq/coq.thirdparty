@@ -48,7 +48,7 @@ return function(spec)
                 label = email,
                 insertText = email,
                 detail = "Notmuch Address",
-                kind = 15
+                kind = 1
               })
             end
             callback(results)
