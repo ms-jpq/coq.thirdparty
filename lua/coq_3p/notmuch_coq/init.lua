@@ -1,5 +1,6 @@
 return function(spec)
-  local name = spec.short_name or "MAIL"
+  local name = spec.short_name or "NOTM"
+  local query_template = spec.query_template or "from:*${keyword}*"
   
   return function(args, callback)
     local line = args.line
@@ -22,7 +23,7 @@ return function(spec)
       return callback(nil)
     end
 
-    local query = "from:*" .. keyword .. "*"
+    local query = string.gsub(query_template, "%${keyword}", keyword)
     local stdout_lines = {}
     local results = {}
 
