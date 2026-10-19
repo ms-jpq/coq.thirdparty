@@ -33,6 +33,24 @@ The rest of object are specific to each individual source.
 
 ## First party
 
+### Skills
+
+```lua
+{
+  src = "skills",
+  short_name = "SKL",
+  paths = {
+    "~/.claude/skills",
+    "~/.agents/skills",
+    "~/.codex/skills",
+  },
+}
+```
+
+- Completes only in buffers with the `markdown` filetype.
+
+---
+
 ### Included VimScripts
 
 These sources comes with vim / nvim's [default runtime](https://github.com/neovim/neovim/tree/master/runtime/autoload).
